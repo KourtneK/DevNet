@@ -40,5 +40,5 @@ app.get('/config', (req, res) => {
 // Inicia o servidor
 app.listen(port, () => {
     console.log(`🚀 DevNet rodando em http://localhost:${port}`);
-    console.log('Pressione CTRL+C para parar o servidor');
+    console.log('Pressione CTREL+C para parar o servidor');
 });
