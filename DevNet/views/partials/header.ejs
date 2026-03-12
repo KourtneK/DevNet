@@ -1,27 +1,23 @@
-<nav>
-    <% if (paginaAtual !== 'home') { %>
-        <button class="btn button-home"><a href="/">Home</a></button>
-    <% } %>
+<nav class="navbar">
+    <div class="nav-links">
+        <% if (paginaAtual !== 'home') { %><button class="btn button-home"><a href="/">Home</a></button><% } %>
 
-    <% if (paginaAtual !== 'feed') { %>
-        <button class="btn button-feed"><a href="/feed">Feed</a></button>
-    <% } %>
+        <% if (paginaAtual !== 'feed') { %><button class="btn button-feed"><a href="/feed">Feed</a></button><% } %>
 
-    <% if (paginaAtual !== 'perfil') { %>
-        <button class="btn button-perfil"><a href="/perfil">Perfil</a></button>
-    <% } %>
+        <% if (paginaAtual !== 'perfil') { %><button class="btn button-perfil"><a href="/perfil">Perfil</a></button><% } %>
 
-    <% if (paginaAtual !== 'config') { %>
-        <button class="btn button-cfg"><a href="/config">Configurações</a></button>
-    <% } %>
+        <% if (paginaAtual !== 'config') { %><button class="btn button-cfg"><a href="/config">Configurações</a></button><% } %>
+    </div>
 
     <% if (!user) { %>
-        <button class="btn button-cfg" style="background-color: #333;"><a href="/auth/github">Login GitHub</a></button>
+        <button class="btn button-home" style="background-color: #333;">
+            <a href="/auth/github">Login com GitHub</a>
+        </button>
     <% } else { %>
-        <div style="display: flex; align-items: center; gap: 10px; margin-left: 20px;">
-            <img src="<%= user._json.avatar_url %>" width="30" style="border-radius: 50%;">
-            <span>@<%= user.username %></span>
-            <button class="btn button-home"><a href="/logout">Sair</a></button>
+        <div class="profile-pill">
+            <img src="<%= user._json.avatar_url %>" class="avatar-nav" alt="Avatar">
+            <span class="username-nav">@<%= user.username %></span>
+            <a href="/logout" class="logout-link">Sair</a>
         </div>
     <% } %>
 </nav>

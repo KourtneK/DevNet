@@ -22,6 +22,42 @@ nav {
     display: flex;
     justify-content: center;
     gap: 20px;
+    padding: 20px;
+}
+
+.profile-pill {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: rgba(0, 0, 0, 0.5); /* Fundo escuro semitransparente */
+    padding: 5px 15px;
+    border-radius: 50px; /* Deixa arredondado como uma pílula */
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.avatar-nav {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%; /* Foto redonda */
+    border: 2px solid white;
+    object-fit: cover;
+}
+
+.username-nav {
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.logout-link {
+    color: #ff4b4b;
+    text-decoration: none;
+    font-size: 12px;
+    margin-left: 5px;
+}
+
+.logout-link:hover {
+    text-decoration: underline;
 }
 
 .btn {
