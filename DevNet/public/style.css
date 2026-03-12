@@ -23,22 +23,28 @@ nav {
     justify-content: center;
     gap: 20px;
     padding: 20px;
+    position: relative;
 }
 
-.profile-pill {
+.profile-pill-top-right {
+    position: fixed;
+    top: 20px;
+    right: 15px;
+    z-index: 1000;
     display: flex;
     align-items: center;
     gap: 10px;
-    background-color: rgba(0, 0, 0, 0.5); /* Fundo escuro semitransparente */
-    padding: 5px 15px;
-    border-radius: 50px; /* Deixa arredondado como uma pílula */
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 6px 15px;
+    border-radius: 60px;
     border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(5px); /* Efeito de vidro sutil */
 }
 
 .avatar-nav {
     width: 35px;
     height: 35px;
-    border-radius: 50%; /* Foto redonda */
+    border-radius: 50%;
     border: 2px solid white;
     object-fit: cover;
 }
@@ -46,14 +52,15 @@ nav {
 .username-nav {
     color: white;
     font-weight: bold;
-    font-size: 14px;
+    font-size: 0.9rem;
 }
 
 .logout-link {
-    color: #ff4b4b;
+    color: #ff4d4d;
     text-decoration: none;
-    font-size: 12px;
-    margin-left: 5px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 .logout-link:hover {
@@ -101,4 +108,23 @@ nav {
 
 h1{
     text-align: center;
+    padding: 14px 0px;
+    margin-top: 40px;
+    color: white;
+}
+
+main {
+    max-width: 800px; /* Evita que o texto fique muito largo em telas grandes */
+    margin: 40px auto; /* Centraliza o conteúdo e dá espaço do topo */
+    padding: 20px;
+    background-color: rgba(0, 0, 0, 0.5); /* Fundo escuro para destacar o texto */
+    border-radius: 16px;
+    color: white;
+}
+
+footer {
+    text-align: center;
+    padding: 20px;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.8rem;
 }

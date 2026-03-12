@@ -9,15 +9,17 @@
         <% if (paginaAtual !== 'config') { %><button class="btn button-cfg"><a href="/config">Configurações</a></button><% } %>
     </div>
 
-    <% if (!user) { %>
-        <button class="btn button-home" style="background-color: #333;">
-            <a href="/auth/github">Login com GitHub</a>
-        </button>
-    <% } else { %>
-        <div class="profile-pill">
+    <% if (user) { %>
+        <div class="profile-pill-top-right">
             <img src="<%= user._json.avatar_url %>" class="avatar-nav" alt="Avatar">
             <span class="username-nav">@<%= user.username %></span>
             <a href="/logout" class="logout-link">Sair</a>
+        </div>
+    <% } else { %>
+        <div class="profile-pill-top-right">
+             <button class="btn button-home" style="background-color: #333; padding: 10px 20px;">
+                <a href="/auth/github">Login</a>
+            </button>
         </div>
     <% } %>
 </nav>
