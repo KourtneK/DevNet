@@ -44,6 +44,11 @@ passport.use(new GitHubStrategy({
 passport.serializeUser((user, done) => done(null, user));
 passport.deserializeUser((obj, done) => done(null, obj));
 
+app.use((req, res, next) => {
+    res.locals.user = req.user || null;     // Se não estiver logado, user será null, mas 'existirá' para o EJS
+    next();
+});
+
 // --- ROTAS DE LOGIN ---
 app.get('/auth/github', passport.authenticate('github', { scope: [ 'user:email' ] }));
 
