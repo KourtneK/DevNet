@@ -10,19 +10,27 @@ const port = 3000;
 
 // --- MEMÓRIA TEMPORÁRIA PARA OS POSTS REAIS ---
 let postsGlobais = [
-    { usuario: "Sistema", avatar: "https://github.com/github.png", conteudo: "Bem-vindo à DevNet! Logue com seu GitHub para postar.", data: "11/03/2026" }
+    { 
+        id: "1741720000000",
+        usuario: "Sistema", 
+        avatar: "https://github.com/github.png", 
+        tipo: "texto",
+        conteudo: "Bem-vindo à DevNet! Logue com seu GitHub para postar códigos, imagens e vídeos.", 
+        linkMidia: "",
+        data: "11/03/2026" 
+    }
 ];
 
 // --- CONFIGURAÇÕES DO SERVIOR (LOCAL) ---
 app.use(morgan('dev'));
-app.set('view engine', 'ejs');  
-app.set('views', path.join(__dirname, 'views')); 
-app.use(express.static(path.join(__dirname, 'public')));    
-app.use(express.urlencoded({ extended: true }));    
+app.set('view engine', 'ejs');  // Define o motor de visualização para ejs
+app.set('views', path.join(__dirname, 'views')); // Garante que o Express ache a pasta views
+app.use(express.static(path.join(__dirname, 'public')));    // Middleware para arquivos estáticos (CSS, Imagens)
+app.use(express.urlencoded({ extended: true }));    // Middleware para ler dados de formulários (Necessário para posts reais futuramente)
 
 // --- CONFIGURAÇÃO DE AUTENTICAÇÃO (SESSÃO E PASSPORT) ---
 app.use(session({
-    secret: 'devnet-ifro-secret-key', 
+    secret: 'devnet-ifro-secret-key', // Chave de segurança para a sessão
     resave: false,
     saveUninitialized: false
 }));
@@ -31,8 +39,8 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 passport.use(new GitHubStrategy({
-    clientID: 'Ov23lix91K8ckamWpusN', 
-    clientSecret: 'e2e72d01f27e626158d2d82d536b1b4dcba5a68f', 
+    clientID: 'Ov23lix91K8ckamWpusN', // id cliente
+    clientSecret: 'e2e72d01f27e626158d2d82d536b1b4dcba5a68f', // id secreto cliente
     callbackURL: "http://localhost:3000/auth/github/callback"
   },
   function(accessToken, refreshToken, profile, done) {
@@ -72,21 +80,26 @@ app.get('/feed', (req, res) => {
 });
 
 app.get('/perfil', (req, res) => {
-    res.render('perfil', { paginaAtual: 'perfil' });    
+    res.render('perfil', { paginaAtual: 'perfil' });    // Rota Perfil
 });
 
 app.get('/config', (req, res) => {
-    res.render('config', { paginaAtual: 'config' });    
+    res.render('config', { paginaAtual: 'config' });    // Rota Configurações
 });
 
 // --- ROTA PARA RECEBER POSTAGENS REAIS ---
 app.post('/postar', (req, res) => {
     if (!req.isAuthenticated()) return res.redirect('/auth/github'); 
 
+    const { conteudo, tipo, linkMidia } = req.body; // Pega os novos campos
+
     const novoPost = {
+        id: Date.now().toString(), // Cria um ID único baseado no tempo
         usuario: req.user.username, 
         avatar: req.user._json.avatar_url,
-        conteudo: req.body.conteudo,
+        tipo: tipo || 'texto', // texto, codigo, imagem, video, repo
+        conteudo: conteudo,
+        linkMidia: linkMidia || '',
         data: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
     };
 
@@ -94,8 +107,23 @@ app.post('/postar', (req, res) => {
     res.redirect('/feed');
 });
 
+// --- ROTA PARA DELETAR POSTS ---
+app.post('/deletar/:id', (req, res) => {
+    if (!req.isAuthenticated()) return res.redirect('/auth/github');
+
+    const idPost = req.params.id;
+    // Encontra o post e verifica se o usuário é o dono
+    const post = postsGlobais.find(p => p.id === idPost);
+
+    if (post && post.usuario === req.user.username) {
+        postsGlobais = postsGlobais.filter(p => p.id !== idPost); // Remove o post da lista
+    }
+
+    res.redirect('/feed');
+});
+
 // --- INICIA O SERVIDOR ---
 app.listen(port, () => {
     console.log(`🚀 DevNet rodando em http://localhost:${port}`);
-    console.log('Pressione CTRL+C para parar o servidor'); 
+    console.log('Pressione CTREL+C para parar o servidor'); 
 });

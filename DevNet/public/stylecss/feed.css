@@ -1,1 +1,68 @@
-/* vazio por enquanto */
+/* --- ESTILO DAS NOVAS OPÇÕES DO FORMULÁRIO --- */
+.opcoes-post {
+    display: flex;
+    gap: 10px;
+    margin: 10px 0;
+}
+
+/* Usando o seu padrão de background rgba(0,0,0,0.3) */
+.opcoes-post select, .opcoes-post input {
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 8px;
+    border-radius: 8px;
+    font-family: inherit;
+}
+
+/* --- AJUSTE NO CARD DE POST --- */
+.card-post {
+    background: rgba(0, 0, 0, 0.9); /* Fundo escuro que você escolheu */
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    color: #e0e0e0; /* Alterado de #333 para claro, para ler no fundo escuro */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.user-info strong { color: white; }
+.user-info small { color: rgba(255, 255, 255, 0.5); }
+
+/* --- BLOCO DE CÓDIGO --- */
+pre {
+    background: #1e1e1e;
+    color: #9cdcfe;
+    padding: 15px;
+    border-radius: 8px;
+    overflow-x: auto;
+    border-left: 3px solid var(--accent-blue); /* Usando sua variável */
+}
+
+/* --- MÍDIAS E BOTÕES --- */
+.midia-res {
+    max-width: 100%;
+    border-radius: 8px;
+    margin-top: 15px;
+}
+
+.btn-delete {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+    margin-left: auto;
+    opacity: 0.6;
+    transition: 0.3s;
+}
+
+.btn-delete:hover { opacity: 1; transform: scale(1.1); }
+
+.repo-link {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 12px;
+    border-radius: 8px;
+    text-align: center;
+    margin-top: 15px;
+}
+
+.repo-link a { color: #58a6ff; text-decoration: none; font-weight: bold; }
