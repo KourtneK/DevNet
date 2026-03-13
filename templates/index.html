@@ -1,30 +1,13 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
-    <link rel="stylesheet" href="/static/style.css">
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block extra_css %}
     <link rel="stylesheet" href="/static/stylecss/index.css">
-    <title>DevNet - Home</title>
-</head>
-<body>
+{% endblock %}
+
+{% block content %}
     <div>
         <h1>Home</h1>
     </div>
-    
-    <nav>
-        <a href="/feed" class="btn button-feed">Feed</a>
-        <a href="/config" class="btn button-cfg">Configurações</a>
-       <a href="/perfil" class="btn button-perfil">Perfil</a>
-        <a href="/login" class="btn button-login">Login</a>
-    </nav>
-    
-</body>
-</html>
-
-
-
-<!-- clit id: Ov23li2BzA0MMMH6jZZC
-
-client secret id: f69d003b6cbc854c265dd6b57edce3915e6f47de -->
+{% endblock %}

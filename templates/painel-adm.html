@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Painel-adm{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="/static/stylecss/admin.css">
+{% endblock %}
+
+{% block content %}
+    <div class="admin-info">
+        <p>Logado como <strong>{{ admin.username }}</strong> ({{ admin.email }})</p>
+    </div>
+
+    <h2 class="section-title">Tabela: Users</h2>
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for u in usuarios %}
+            <tr>
+                <td>{{ u.id }}</td>
+                <td>{{ u.username }}</td>
+                <td>{{ u.email }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2 class="section-title">Tabela: Posts</h2>
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Conteúdo</th>
+                <th>Data</th>
+                <th>User ID</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in posts %}
+            <tr>
+                <td>{{ p.id }}</td>
+                <td>{{ p.content[:100] }}{% if p.content|length > 100 %}...{% endif %}</td>
+                <td>{{ p.date_posted.strftime('%d/%m/%Y %H:%M') }}</td>
+                <td>{{ p.user_id }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

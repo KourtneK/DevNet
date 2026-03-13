@@ -1,14 +1,12 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
-    <link rel="stylesheet" href="/static/style.css">
+{% extends "base.html" %}
+
+{% block title %}Login{% endblock %}
+
+{% block extra_css %}
     <link rel="stylesheet" href="/static/stylecss/login.css">
-    <title>DevNet - Login</title>
-</head>
-<body>
+{% endblock %}
+
+{% block content %}
     <div>
         <h1>Login</h1>
     </div>
@@ -16,10 +14,4 @@
     <div>
         <a href="/login/github" class="btn btn-github">Entrar com GitHub</a>
     </div>
-
-    <nav>
-        <a href="/feed" class="btn button-feed">Feed</a>
-        <a href="/" class="btn button-home">Home</a>
-    </nav>
-</body>
-</html>
+{% endblock %}
