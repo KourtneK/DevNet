@@ -24,6 +24,16 @@ body {
     align-items: center;
     min-height: 100vh;
     padding-top: 20px;
+    background-attachment: fixed;
+    background-size: cover;
+    background-position: center;
+}
+
+/* Cabeçalho */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 h1 {

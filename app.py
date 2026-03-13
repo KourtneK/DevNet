@@ -5,6 +5,7 @@ import os
 from flask import send_from_directory
 import requests
 from flask import request, redirect, url_for, session
+from dotenv import load_dotenv
 
 app = Flask(__name__)
 
@@ -15,7 +16,7 @@ CORS(app)
 basedir = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'devnet.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SECRET_KEY'] = '35798081'
+app.config['SECRET_KEY'] = os.getenv("FLASK_SECRET_KEY")
 
 # Inicializa o banco de dados com as configurações do app
 db.init_app(app)
@@ -24,8 +25,8 @@ db.init_app(app)
 with app.app_context():
     db.create_all()
 
-GITHUB_CLIENT_ID = "Ov23li2BzA0MMMH6jZZC"
-GITHUB_CLIENT_SECRET = "f69d003b6cbc854c265dd6b57edce3915e6f47de"
+GITHUB_CLIENT_ID = os.getenv("GITHUB_CLIENT_ID")
+GITHUB_CLIENT_SECRET = os.getenv("GITHUB_CLIENT_SECRET")
 
 @app.route('/login/github')
 def login_github():
