@@ -1,0 +1,14 @@
+.post-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.post-header {
+    font-weight: bold;
+    color: var(--accent);
+    margin-bottom: 10px;
+    font-size: 0.8rem;
+}

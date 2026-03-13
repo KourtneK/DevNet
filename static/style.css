@@ -1,0 +1,65 @@
+:root {
+    background-image: url(images/fundo.png);
+    --card-bg: rgb(0, 0, 0);
+    --text-main: rgb(255, 255, 255);
+    --accent-blue: rgb(21, 17, 72);
+    --border: rgb(89, 89, 89);
+    --accent-green: rgb(59, 185, 80);
+    --accent-gray: rgb(139, 139, 139);
+    -webkit-text-fill-color: rgb(255, 255, 255);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    padding-top: 20px;
+}
+
+h1 {
+    margin-bottom: 20px;
+    color: var(--accent);
+}
+
+/* Navegação */
+nav {
+    margin-top: 30px;
+    padding: 15px;
+    background: var(--card-bg);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+}
+
+.btn {
+    text-decoration: none;
+    color: var(--text-main);
+    padding: 8px 16px;
+    margin: 0 5px;
+    border-radius: 6px;
+    transition: 0.3s;
+    font-size: 0.9rem;
+    border: 1px solid var(--border);
+    display: inline-block;
+}
+
+.btn:hover {
+    background: var(--border);
+    border-color: var(--accent);
+}
+
+/* Botões específicos com cores */
+.button-home { border-left: 4px solid #79c0ff; }
+.button-feed { border-left: 4px solid #3fb950; }
+.button-perfil { border-left: 4px solid #d2a8ff; }
+.button-cfg { border-left: 4px solid #8b949e; }
+.button-login { border-left: 4px solid #f85149; }

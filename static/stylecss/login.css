@@ -1,0 +1,15 @@
+.btn-github {
+    background-color: var(--accent-green);
+    color: rgb(255, 255, 255);
+    font-weight: bold;
+    padding: 12px 24px;
+    border: none;
+    font-size: 1.1rem;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.btn-github:hover {
+    background-color: rgb(46, 160, 67); /* #2ea043 */
+    transform: translateY(-2px);
+}
