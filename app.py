@@ -36,10 +36,9 @@ def login_github():
 
 @app.route('/login/github/callback')
 def github_callback():
-    # 2. GitHub volta com um código na URL
     code = request.args.get('code')
     
-    # 3. Troca o código pelo Access Token
+    # Troca o código pelo Access Token
     token_resp = requests.post(
         'https://github.com/login/oauth/access_token',
         data={
@@ -52,16 +51,36 @@ def github_callback():
     
     access_token = token_resp.get('access_token')
 
-    # 4. Usa o token para pegar os dados do usuário
+    # Pega os dados do utilizador no GitHub
     user_data = requests.get(
         'https://api.github.com/user',
         headers={'Authorization': f'token {access_token}'}
     ).json()
 
-    # Aqui você já tem o username e email do GitHub!
-    print(f"Usuário logado: {user_data.get('login')}")
+    username = user_data.get('login')
+    email = user_data.get('email')
+
+    # Se o email for privado no GitHub, ele pode vir vazio. Criamos um padrão:
+    if not email:
+        email = f"{username}@github.com"
+
+    # --- LÓGICA DE PERSISTÊNCIA E SESSÃO ---
     
-    # Próximo passo: salvar no seu devnet.db (SQLAlchemy)
+    # 1. Verifica se o utilizador já existe no banco
+    user = User.query.filter_by(username=username).first()
+
+    if not user:
+        # 2. Se não existe, cria um novo registo (sem password, pois é OAuth)
+        user = User(username=username, email=email)
+        db.session.add(user)
+        db.session.commit()
+
+    # 3. Guarda o ID e o nome na sessão do navegador
+    session['user_id'] = user.id
+    session['username'] = user.username
+
+    print(f"✅ Utilizador {username} autenticado com sucesso!")
+    
     return redirect(url_for('feed'))
 
 # Rota favicon
