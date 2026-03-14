@@ -7,7 +7,51 @@
 {% endblock %}
 
 {% block content %}
-    <div>
-        <h1>Perfil</h1>
+<div class="profile-container" style="text-align: center; color: white; padding: 50px;">
+    
+    <img src="{{ user.avatar_url }}" alt="Avatar" style="width: 150px; border-radius: 50%; border: 3px solid #58a6ff;">
+    
+    <div style="margin-top: 20px;">
+        <h1 style="display: inline;">{{ user.username }}</h1>
+        {% if is_admin %}
+            <span style="background: #238636; color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.8rem; margin-left: 10px;">Admin</span>
+        {% endif %}
     </div>
+
+    <p style="color: #8b949e;">{{ user.email }}</p>
+    
+    <div style="max-width: 600px; margin: 20px auto; font-style: italic;">
+        <p>{{ user.bio if user.bio else "Este dev ainda não escreveu uma bio no GitHub." }}</p>
+    </div>
+
+    {% if is_admin %}
+        <hr style="border: 0.5px solid #30363d; margin: 30px 0;">
+        <a href="/admin" class="btn button-login" style="background: #417c59; color: black; font-weight: bold;">Gerenciar Sistema</a>
+    {% endif %}
+
+    <div style="margin-top: 60px; text-align: left; max-width: 800px; margin-left: auto; margin-right: auto;">
+        <h2 style="border-bottom: 1px solid #30363d; padding-bottom: 10px;">Meus Repositórios Públicos</h2>
+        
+        <div style="display: flex; flex-direction: column; gap: 15px; margin-top: 20px;">
+            {% for repo in repos %}
+                <a href="{{ repo.html_url }}" target="_blank" 
+                   style="display: block; background: #161b22; border: 1px solid #30363d; padding: 20px; border-radius: 8px; text-decoration: none; transition: 0.3s;"
+                   onmouseover="this.style.borderColor='#58a6ff'" 
+                   onmouseout="this.style.borderColor='#30363d'">
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="color: #58a6ff; font-weight: bold; font-size: 1.2rem;">{{ repo.name }}</span>
+                        <span style="color: #8b949e; font-size: 0.8rem; background: #21262d; padding: 2px 10px; border-radius: 10px;">
+                            {{ repo.language if repo.language else "Markdown" }}
+                        </span>
+                    </div>
+                    
+                    <p style="color: #8b949e; margin: 10px 0 0 0; font-size: 0.95rem;">
+                        {{ repo.description if repo.description else "Nenhuma descrição fornecida." }}
+                    </p>
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+</div>
 {% endblock %}

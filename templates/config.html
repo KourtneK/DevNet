@@ -2,12 +2,29 @@
 
 {% block title %}Configurações{% endblock %}
 
-{% block extra_css %}
-    <link rel="stylesheet" href="/static/stylecss/config.css">
-{% endblock %}
-
 {% block content %}
-    <div>
-        <h1>Configurações</h1>
+<div class="profile-container" style="max-width: 600px; margin: 0 auto; color: white; padding: 50px;">
+    <h1>Configurações de Perfil</h1>
+    <p style="color: #8b949e;">Personalize sua identidade na DevNet</p>
+    
+    <hr style="border: 0.5px solid #30363d; margin: 30px 0;">
+
+    <form action="/update_bio" method="POST" style="text-align: left;">
+        <div style="margin-bottom: 20px;">
+            <label for="bio" style="display: block; margin-bottom: 10px; font-weight: bold;">Sua Bio:</label>
+            <textarea name="bio" id="bio" rows="5" 
+                style="width: 100%; background: #0d1117; color: white; border: 1px solid #30363d; border-radius: 8px; padding: 15px; font-family: inherit; font-size: 1rem;"
+                placeholder="Conte um pouco sobre suas tecnologias favoritas... 🚀">{{ user.bio if user.bio else '' }}</textarea>
+        </div>
+
+        <button type="submit" class="btn button-login" 
+            style="background: #238636; color: white; width: 100%; font-weight: bold; border: none;">
+            Salvar Alterações
+        </button>
+    </form>
+
+    <div style="margin-top: 30px; text-align: center;">
+        <a href="/perfil" style="color: #8b949e; text-decoration: none; font-size: 0.9rem;">← Voltar ao Perfil</a>
     </div>
+</div>
 {% endblock %}

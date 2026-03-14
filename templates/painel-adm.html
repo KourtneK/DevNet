@@ -1,55 +1,58 @@
 {% extends "base.html" %}
 
-{% block title %}Painel-adm{% endblock %}
-
-{% block extra_css %}
-    <link rel="stylesheet" href="/static/stylecss/admin.css">
-{% endblock %}
+{% block title %}Painel Administrativo{% endblock %}
 
 {% block content %}
-    <div class="admin-info">
-        <p>Logado como <strong>{{ admin.username }}</strong> ({{ admin.email }})</p>
+<div class="profile-container" style="max-width: 1000px; margin: 0 auto; color: white; padding: 30px;">
+    <h1>Gerenciamento de Usuários</h1>
+    
+    <div style="background: #161b22; border: 1px solid #30363d; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
+        <form action="/admin" method="GET" style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <input type="text" name="q" placeholder="Buscar por ID, Nome ou Email..." value="{{ search_query }}"
+                   style="flex: 2; min-width: 250px; background: #0d1117; color: white; border: 1px solid #30363d; padding: 10px; border-radius: 5px;">
+            
+            <select name="sort" style="flex: 1; background: #0d1117; color: white; border: 1px solid #30363d; padding: 10px; border-radius: 5px;">
+                <option value="id_asc" {% if sort_option == 'id_asc' %}selected{% endif %}>Ordem Numérica/Adição (1-9)</option>
+                <option value="id_desc" {% if sort_option == 'id_desc' %}selected{% endif %}>Ordem Numérica Reversa (9-1)</option>
+                <option value="alpha_asc" {% if sort_option == 'alpha_asc' %}selected{% endif %}>Ordem Alfabética (A-Z)</option>
+                <option value="alpha_desc" {% if sort_option == 'alpha_desc' %}selected{% endif %}>Ordem Alfabética Reversa (Z-A)</option>
+            </select>
+            
+            <button type="submit" class="btn" style="background: #21262d; color: white; padding: 10px 20px; border: 1px solid #30363d;">Aplicar</button>
+            <a href="/admin" style="color: #8b949e; text-decoration: none; align-self: center;">Limpar</a>
+        </form>
     </div>
 
-    <h2 class="section-title">Tabela: Users</h2>
-    <table class="admin-table">
+    <table class="admin-table" style="width: 100%; border-collapse: collapse; text-align: left;">
         <thead>
-            <tr>
-                <th>ID</th>
-                <th>Username</th>
-                <th>Email</th>
+            <tr style="border-bottom: 2px solid #30363d; color: #8b949e;">
+                <th style="padding: 12px;">ID</th>
+                <th style="padding: 12px;">Username</th>
+                <th style="padding: 12px;">Email</th>
+                <th style="padding: 12px; text-align: right;">Ações</th>
             </tr>
         </thead>
         <tbody>
             {% for u in usuarios %}
-            <tr>
-                <td>{{ u.id }}</td>
-                <td>{{ u.username }}</td>
-                <td>{{ u.email }}</td>
+            <tr style="border-bottom: 1px solid #30363d;">
+                <td style="padding: 12px;">{{ u.id }}</td>
+                <td style="padding: 12px; color: #58a6ff; font-weight: bold;">{{ u.username }}</td>
+                <td style="padding: 12px;">{{ u.email }}</td>
+                <td style="padding: 12px; text-align: right;">
+                    {% if u.email != admin.email %}
+                    <form action="/admin/delete_user/{{ u.id }}" method="POST" style="display: inline;" 
+                          onsubmit="return confirm('Tem certeza que deseja deletar este usuário?')">
+                        <button type="submit" style="background: transparent; border: 1px solid #f85149; color: #f85149; padding: 5px 10px; border-radius: 5px; cursor: pointer;">
+                            Deletar
+                        </button>
+                    </form>
+                    {% else %}
+                    <span style="color: #8b949e; font-size: 0.8rem;">(Você)</span>
+                    {% endif %}
+                </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
-
-    <h2 class="section-title">Tabela: Posts</h2>
-    <table class="admin-table">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Conteúdo</th>
-                <th>Data</th>
-                <th>User ID</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for p in posts %}
-            <tr>
-                <td>{{ p.id }}</td>
-                <td>{{ p.content[:100] }}{% if p.content|length > 100 %}...{% endif %}</td>
-                <td>{{ p.date_posted.strftime('%d/%m/%Y %H:%M') }}</td>
-                <td>{{ p.user_id }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+</div>
 {% endblock %}

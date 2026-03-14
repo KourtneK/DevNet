@@ -12,6 +12,9 @@ class User(db.Model):
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(200), nullable=True)
+    avatar_url = db.Column(db.String(255), nullable=True)
+    bio = db.Column(db.Text, nullable=True)
+    # Relação única com os posts
     posts = db.relationship('Post', backref='author', lazy=True)
 
 class Post(db.Model):
