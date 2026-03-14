@@ -6,7 +6,28 @@ __pycache__/
 *.pyc
 
 # Environment variables
+env
+venv
+
 .env
+.venv
+
+env/
+venv/
+
+/env/
+/venv/
+
+./env
+./venv
+
+.env/
+.venv/
+
+./env/
+./venv/
+
+
 
 # Database file
 *.db
