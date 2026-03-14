@@ -1,23 +1,12 @@
-# Dependências
-node_modules/
+# Virtual Environment
+venv/
 
-# Variáveis de Ambiente (Segurança)
+# Python cache
+__pycache__/
+*.pyc
+
+# Environment variables
 .env
-.env.*
 
-# Logs
-*.log
-
-# Build / Compilação
-dist/
-build/
-out/
-
-# Sistema e Editor
-.DS_Store
-.vscode/
-
-# Banco de dados
-*.sqlite
-*.sqlite3
+# Database file
 *.db
