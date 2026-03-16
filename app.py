@@ -5,6 +5,10 @@ from dotenv import load_dotenv
 import os
 import requests
 from sqlalchemy import or_
+import mimetypes
+from werkzeug.utils import secure_filename
+from datetime import *
+
 
 # 1. Carrega as variáveis do .env antes de tudo
 load_dotenv()
@@ -18,10 +22,14 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'de
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = os.getenv("FLASK_SECRET_KEY")
 
+
 db.init_app(app)
 
 with app.app_context():
     db.create_all()
+
+UPLOAD_FOLDER = 'static/uploads'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # 3. Configurações OAuth
 GITHUB_CLIENT_ID = os.getenv("GITHUB_CLIENT_ID")
@@ -123,7 +131,41 @@ def home():
 def feed():
     if 'user_id' not in session:
         return redirect(url_for('login'))
-    return render_template('feed.html')
+    posts = Post.query.order_by(Post.date_posted.desc()).all()
+    return render_template('feed.html', posts=posts)
+
+
+@app.route('/postar', methods=['POST'])
+def criar_post():
+    user_id = session.get('user_id')
+    if not user_id: return redirect(url_for('login'))
+
+    # Captura texto e código
+    texto = request.form.get('content')
+    codigo = request.form.get('code_content')
+    
+    novo_post = Post(content=texto, code_content=codigo, user_id=user_id)
+
+    # Processamento de Arquivos (Imagem, Vídeo ou Qualquer Extensão)
+    for key in ['image', 'video', 'attachment']:
+        file = request.files.get(key)
+        if file and file.filename != '':
+            ext = os.path.splitext(file.filename)[1].lower()
+            
+            # Verifica se a extensão é reconhecida pelo sistema
+            if mimetypes.types_map.get(ext) or ext in ['.ejs', '.dguiourawjdnfjqwn']: 
+                filename = secure_filename(f"{user_id}_{datetime.now().timestamp()}{ext}")
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                
+                if key == 'image': novo_post.image_path = filename
+                elif key == 'video': novo_post.video_path = filename
+                else: 
+                    novo_post.file_path = filename
+                    novo_post.file_extension = ext
+
+    db.session.add(novo_post)
+    db.session.commit()
+    return redirect(url_for('feed'))
 
 @app.route('/perfil')
 def perfil():

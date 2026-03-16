@@ -7,7 +7,25 @@
 {% endblock %}
 
 {% block content %}
-    <div>
-        <h1>Feed</h1>
+<div class="feed-container">
+    <h1>Feed da Comunidade</h1>
+
+    <div class="post-card" style="margin-bottom: 40px;">
+        <form action="/postar" method="POST" enctype="multipart/form-data">
+            <textarea name="content" placeholder="Texto do post..."></textarea>
+            <textarea name="code_content" placeholder="Código dev.( ).dev..." class="code-block-fixed" style="height: 100px;"></textarea>
+            
+            <div style="display: flex; gap: 10px; margin-top: 10px; font-size: 0.8rem;">
+                <label>🖼️ <input type="file" name="image" accept="image/*"></label>
+                <label>🎥 <input type="file" name="video" accept="video/*"></label>
+                <label>📁 <input type="file" name="attachment"></label>
+            </div>
+            
+            <button type="submit" class="btn" style="background: #238636; margin-top: 15px; width: 100%;">Postar</button>
+        </form>
     </div>
+
+    {% for post in posts %}
+        {% endfor %}
+</div>
 {% endblock %}

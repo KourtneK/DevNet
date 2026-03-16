@@ -12,3 +12,55 @@
     margin-bottom: 10px;
     font-size: 0.8rem;
 }
+
+.post-text {
+    color: white;
+    line-height: 1.5;
+    margin-bottom: 15px;
+}
+
+.code-block-fixed {
+    height: 300px;
+    overflow-y: auto;
+    background: #0d1117; /* Você pode trocar por var(--code-bg) se tiver */
+    color: #e6edf3;
+    padding: 15px;
+    border-radius: 8px;
+    font-family: 'Courier New', monospace;
+    border: 1px solid var(--border);
+    margin: 15px 0;
+}
+
+.code-block-fixed::-webkit-scrollbar {
+    width: 8px;
+}
+.code-block-fixed::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 4px;
+}
+
+.post-media {
+    max-width: 100%;
+    border-radius: 8px;
+    margin-top: 10px;
+    display: block;
+    border: 1px solid var(--border);
+}
+
+.file-attachment {
+    margin-top: 15px;
+    padding: 12px;
+    background: var(--card-bg); /* Reutilizando sua variável */
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.file-attachment a {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
