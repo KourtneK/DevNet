@@ -40,8 +40,7 @@
                 <td style="padding: 12px;">{{ u.email }}</td>
                 <td style="padding: 12px; text-align: right;">
                     {% if u.email != admin.email %}
-                    <form action="/admin/delete_user/{{ u.id }}" method="POST" style="display: inline;" 
-                          onsubmit="return confirm('Tem certeza que deseja deletar este usuário?')">
+                    <form action="/admin/delete_user/{{ u.id }}" method="POST" style="display: inline;">
                         <button type="submit" style="background: transparent; border: 1px solid #f85149; color: #f85149; padding: 5px 10px; border-radius: 5px; cursor: pointer;">
                             Deletar
                         </button>

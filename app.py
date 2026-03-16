@@ -247,6 +247,6 @@ def favicon():
                                'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 if __name__ == '__main__':
-    print("SERVIDOR RODANDO NA PORTA 3000")
-    print("APERTE CTREL+C PARA PARAR O SERVIDOR")
+    print("✅   SERVIDOR RODANDO NA PORTA 3000")
+    print("⚠️    APERTE CTREL+C PARA PARAR O SERVIDOR")
     app.run(host='localhost', port=3000, debug=True)

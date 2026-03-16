@@ -14,8 +14,8 @@ class User(db.Model):
     password = db.Column(db.String(200), nullable=True)
     avatar_url = db.Column(db.String(255), nullable=True)
     bio = db.Column(db.Text, nullable=True)
-    # Relação única com os posts
     posts = db.relationship('Post', backref='author', lazy=True)
+    is_banned = db.Column(db.Boolean, default=False)
 
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
