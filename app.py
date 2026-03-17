@@ -7,40 +7,46 @@ import requests
 from sqlalchemy import or_
 import mimetypes
 from werkzeug.utils import secure_filename
-from datetime import *
+from datetime import datetime
 
+# =========================================================
+# 1. CONFIGURAÇÕES INICIAIS E AMBIENTE
+# =========================================================
 
-# 1. Carrega as variáveis do .env antes de tudo
+# Carrega as variáveis sensíveis (Client ID, Secret, Flask Key) do ficheiro .env
 load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
 
-# 2. Configurações do Banco e Segurança
+# Configuração do caminho absoluto para o banco de dados SQLite
 basedir = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'devnet.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = os.getenv("FLASK_SECRET_KEY")
 
-
+# Inicialização do Banco de Dados
 db.init_app(app)
 
 with app.app_context():
-    db.create_all()
+    db.create_all() # Garante que as tabelas User e Post sejam criadas
 
+# Configuração de Uploads e Prevenção de Erros de Diretório
 UPLOAD_FOLDER = 'static/uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+# CRITICAL: Cria a pasta se ela não existir para evitar FileNotFoundError
+os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True) 
 
-# 3. Configurações OAuth
+# Configurações OAuth do GitHub e Whitelist de Admins
 GITHUB_CLIENT_ID = os.getenv("GITHUB_CLIENT_ID")
 GITHUB_CLIENT_SECRET = os.getenv("GITHUB_CLIENT_SECRET")
 ADMINS_AUTORIZADOS = [
-    'lucasdanielrocha2009@gmail.com',
+    'lucasdanielrocha2009@gmail.com', # Sua identidade soberana
 ]
 
-# =========================
-#    ROTAS DE AUTENTICAÇÃO
-# =========================
+# =========================================================
+# 2. SISTEMA DE AUTENTICAÇÃO (GITHUB OAUTH)
+# =========================================================
 
 @app.route('/login')
 def login():
@@ -52,6 +58,7 @@ def login():
 def login_github():
     if 'user_id' in session:
         return redirect(url_for('feed'))
+    # Redireciona para o GitHub solicitando acesso ao e-mail
     github_url = f"https://github.com/login/oauth/authorize?client_id={GITHUB_CLIENT_ID}&scope=user:email"
     return redirect(github_url)
 
@@ -59,7 +66,7 @@ def login_github():
 def github_callback():
     code = request.args.get('code')
     
-    # 1. Troca o código pelo Access Token
+    # Troca o código temporário pelo Access Token
     token_resp = requests.post(
         'https://github.com/login/oauth/access_token',
         data={
@@ -72,13 +79,13 @@ def github_callback():
     
     access_token = token_resp.get('access_token')
 
-    # 2. Pega os dados básicos (username, avatar, bio)
+    # Recupera dados do perfil (Username, Avatar, Bio)
     user_data = requests.get(
         'https://api.github.com/user',
         headers={'Authorization': f'token {access_token}'}
     ).json()
 
-    # 3. Pega o e-mail real do endpoint privado
+    # Recupera o e-mail primário verificado (essencial para a tranca admin)
     emails_resp = requests.get(
         'https://api.github.com/user/emails',
         headers={'Authorization': f'token {access_token}'}
@@ -89,7 +96,7 @@ def github_callback():
     github_avatar = user_data.get('avatar_url')
     github_bio = user_data.get('bio')
 
-    # 4. Sincroniza com o banco de dados
+    # Sincronização Inteligente com o Banco de Dados
     user = User.query.filter_by(username=github_username).first()
 
     if not user:
@@ -97,17 +104,20 @@ def github_callback():
             username=github_username, 
             email=github_email,
             avatar_url=github_avatar,
-            bio=github_bio
+            bio=github_bio # Salva a bio na primeira vez
         )
         db.session.add(user)
     else:
+        # Atualiza apenas e-mail e avatar
         user.email = github_email
         user.avatar_url = github_avatar
-        user.bio = github_bio
-    
+        # SÓ atualiza a bio se ela estiver vazia na DevNet
+        if not user.bio:
+            user.bio = github_bio
+
     db.session.commit()
     
-    # Salva na sessão para as rotas e o menu
+    # Persistência da sessão
     session['user_id'] = user.id
     session['username'] = user.username
     session['access_token'] = access_token
@@ -119,9 +129,9 @@ def logout():
     session.clear()
     return redirect(url_for('home'))
 
-# =========================
-#    PÁGINAS DO FRONTEND
-# =========================
+# =========================================================
+# 3. MOTOR SOCIAL (FEED E POSTAGEM UNIVERSAL)
+# =========================================================
 
 @app.route('/')
 def home():
@@ -131,29 +141,29 @@ def home():
 def feed():
     if 'user_id' not in session:
         return redirect(url_for('login'))
+    # Busca posts ordenados do mais recente para o mais antigo
     posts = Post.query.order_by(Post.date_posted.desc()).all()
+    # Envia a lista para o Jinja2 (Resolve o erro UndefinedError)
     return render_template('feed.html', posts=posts)
-
 
 @app.route('/postar', methods=['POST'])
 def criar_post():
     user_id = session.get('user_id')
     if not user_id: return redirect(url_for('login'))
 
-    # Captura texto e código
     texto = request.form.get('content')
     codigo = request.form.get('code_content')
     
+    # Instancia o post único que receberá todos os dados de uma vez
     novo_post = Post(content=texto, code_content=codigo, user_id=user_id)
 
-    # Processamento de Arquivos (Imagem, Vídeo ou Qualquer Extensão)
+    # Motor de Upload Universal: Aceita qualquer extensão existente
     for key in ['image', 'video', 'attachment']:
         file = request.files.get(key)
         if file and file.filename != '':
             ext = os.path.splitext(file.filename)[1].lower()
             
-            # Verifica se a extensão é reconhecida pelo sistema
-            if mimetypes.types_map.get(ext) or ext in ['.ejs', '.dguiourawjdnfjqwn']: 
+            if ext: # Validação agnóstica de extensão [.pdf, .ejs, .dguiourawjdnfjqwn, etc]
                 filename = secure_filename(f"{user_id}_{datetime.now().timestamp()}{ext}")
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
                 
@@ -167,6 +177,10 @@ def criar_post():
     db.session.commit()
     return redirect(url_for('feed'))
 
+# =========================================================
+# 4. PERFIL E CONFIGURAÇÕES
+# =========================================================
+
 @app.route('/perfil')
 def perfil():
     user_id = session.get('user_id')
@@ -176,9 +190,10 @@ def perfil():
         return redirect(url_for('login'))
 
     user = db.session.get(User, user_id)
+    # Verifica permissão administrativa para renderizar o botão especial
     is_admin = (user.email in ADMINS_AUTORIZADOS)
 
-    # Faz a chamada para a API do GitHub buscando os repositórios do dono da conta
+    # Integração em tempo real com Repositórios do GitHub
     repos_resp = requests.get(
         'https://api.github.com/user/repos?type=owner&sort=updated',
         headers={'Authorization': f'token {token}'}
@@ -192,13 +207,26 @@ def config_page():
     if not user_id:
         return redirect(url_for('login'))
     
-    # Busca o usuário para preencher o formulário
     user = db.session.get(User, user_id)
     return render_template('config.html', user=user)
 
-# =========================
-#    PAINEL ADMIN
-# =========================
+@app.route('/update_bio', methods=['POST'])
+def update_bio():
+    user_id = session.get('user_id')
+    if not user_id:
+        return redirect(url_for('login'))
+    
+    nova_bio = request.form.get('bio')
+    user = db.session.get(User, user_id)
+    if user:
+        user.bio = nova_bio
+        db.session.commit()
+    
+    return redirect(url_for('perfil'))
+
+# =========================================================
+# 5. PAINEL ADMINISTRATIVO (CENTRAL DE COMANDO)
+# =========================================================
 
 @app.route('/admin')
 def admin_panel():
@@ -207,17 +235,17 @@ def admin_panel():
         return redirect(url_for('login'))
 
     user_admin = db.session.get(User, user_id)
+    # A TRANCA: Só entra se estiver logado e na lista autorizada
     if not user_admin or user_admin.email not in ADMINS_AUTORIZADOS:
         return "<h1>Acesso Negado</h1>", 403
 
-    # Captura parâmetros de busca e ordenação
+    # Captura parâmetros do Motor de Busca e Ordenação
     search_query = request.args.get('q', '')
     sort_option = request.args.get('sort', 'id_asc')
 
-    # Lógica de Busca: ID, Nome ou Email
     query = User.query
     if search_query:
-        # Tenta converter para int se for pesquisa por ID, senão pesquisa texto
+        # Busca Híbrida Inteligente: Identifica IDs numéricos ou texto
         if search_query.isdigit():
             query = query.filter(or_(User.id == int(search_query), 
                                      User.username.contains(search_query), 
@@ -226,14 +254,14 @@ def admin_panel():
             query = query.filter(or_(User.username.contains(search_query), 
                                      User.email.contains(search_query)))
 
-    # Lógica de Ordenação
+    # Motor de Ordenação de Dados
     if sort_option == 'alpha_asc':
         query = query.order_by(User.username.asc())
     elif sort_option == 'alpha_desc':
         query = query.order_by(User.username.desc())
     elif sort_option == 'id_desc':
         query = query.order_by(User.id.desc())
-    else: # id_asc (Padrão: ordem de adição/numérica)
+    else: 
         query = query.order_by(User.id.asc())
 
     todos_usuarios = query.all()
@@ -246,7 +274,6 @@ def admin_panel():
                            search_query=search_query,
                            sort_option=sort_option)
 
-# NOVA ROTA: Deletar Usuário
 @app.route('/admin/delete_user/<int:id>', methods=['POST'])
 def delete_user(id):
     user_id = session.get('user_id')
@@ -257,38 +284,23 @@ def delete_user(id):
 
     user_to_delete = db.session.get(User, id)
     if user_to_delete:
-        # Note: Isso também deletará os posts do usuário devido ao backref/relacionamento
+        # A remoção limpa posts automaticamente via relacionamento backref
         db.session.delete(user_to_delete)
         db.session.commit()
     
     return redirect(url_for('admin_panel'))
 
+# =========================================================
+# 6. UTILITÁRIOS E INICIALIZAÇÃO
+# =========================================================
 
-@app.route('/update_bio', methods=['POST'])
-def update_bio():
-    user_id = session.get('user_id')
-    if not user_id:
-        return redirect(url_for('login'))
-    
-    # Pega o texto enviado pelo formulário
-    nova_bio = request.form.get('bio')
-    
-    # Busca o usuário e atualiza
-    user = db.session.get(User, user_id)
-    if user:
-        user.bio = nova_bio # Se vier vazio, o banco salva como string vazia ou nulo
-        db.session.commit()
-    
-    return redirect(url_for('perfil'))
-
-
-# fav icon pra parar de dar erro desnecessario
 @app.route('/favicon.ico')
 def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static'),
                                'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 if __name__ == '__main__':
-    print("✅   SERVIDOR RODANDO NA PORTA 3000")
-    print("⚠️    APERTE CTREL+C PARA PARAR O SERVIDOR")
+    print("✅   SERVIDOR DE-NET RODANDO NA PORTA 3000")
+    print("⚠️    APERTE CTREL+C PARA PARAR O MOTOR")
+    # Debug=True para capturar erros durante o desenvolvimento
     app.run(host='localhost', port=3000, debug=True)

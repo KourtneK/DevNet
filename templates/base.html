@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
     <link rel="stylesheet" href="/static/style.css">
+    
     {% block extra_css %}{% endblock %}
+    
     <title>DevNet - {% block title %}{% endblock %}</title>
 </head>
 <body>
@@ -13,31 +15,34 @@
     {% block content %}{% endblock %}
 
     <nav>
-    {% if request.path != '/' %}
-        <a href="/" class="btn button-home">Home</a>
-    {% endif %}
-
-    {% if session.get('user_id') %}
-        {% if request.path != '/feed' %}
-            <a href="/feed" class="btn button-feed">Feed</a>
+        {% if request.path != '/' %}
+            <a href="/" class="btn button-home">Home</a>
         {% endif %}
 
-        {% if request.path != '/config' %}
-            <a href="/config" class="btn button-cfg">Configurações</a>
-        {% endif %}
+        {% if session.get('user_id') %}
+            {% if request.path != '/feed' %}
+                <a href="/feed" class="btn button-feed">Feed</a>
+            {% endif %}
 
-        {% if request.path != '/perfil' %}
-            <a href="/perfil" class="btn button-perfil">Perfil</a>
-        {% endif %}
+            {% if request.path != '/config' %}
+                <a href="/config" class="btn button-cfg">Configurações</a>
+            {% endif %}
 
-        <a href="/logout" class="btn button-login" style="border-left-color: #f85149;">Sair</a>
+            {% if request.path != '/perfil' %}
+                <a href="/perfil" class="btn button-perfil">Perfil</a>
+            {% endif %}
 
-    {% else %}
-        {% if request.path != '/login' %}
-            <a href="/login" class="btn button-login">Login</a>
+            <a href="/logout" class="btn button-login" style="border-left-color: #f85149;">Sair</a>
+        {% else %}
+            {% if request.path != '/login' %}
+                <a href="/login" class="btn button-login">Login</a>
+            {% endif %}
         {% endif %}
-    {% endif %}
-</nav>
+    </nav>
+
+    <script src="/static/script.js"></script>
+    
+    {% block extra_js %}{% endblock %}
     
 </body>
 </html>

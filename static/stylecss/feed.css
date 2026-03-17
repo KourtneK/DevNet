@@ -1,66 +1,119 @@
-.post-card {
-    background: var(--card-bg);
-    border: 1px solid var(--border);
-    border-radius: 8px;
+/* - Estilização Final e Robusta */
+
+.feed-container {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
     padding: 20px;
-    margin-bottom: 20px;
 }
 
-.post-header {
-    font-weight: bold;
-    color: var(--accent);
-    margin-bottom: 10px;
-    font-size: 0.8rem;
+.post-form-container {
+    background: rgba(0, 0, 0, 0.8) !important;
+    border: 1px solid var(--border);
+    padding: 30px;
+    border-radius: 12px;
+    margin-bottom: 50px;
 }
 
-.post-text {
-    color: white;
-    line-height: 1.5;
+/* INPUTS FIXOS: Sua exigência de 150px com scroll */
+.fixed-input, .fixed-code-input {
+    width: 100% !important;
+    height: 150px !important;
+    display: block !important;
+    background: #0d1117 !important;
+    color: white !important;
+    border: 1px solid var(--border) !important;
+    padding: 15px;
+    border-radius: 8px;
+    resize: none !important;
+    overflow-y: auto !important;
     margin-bottom: 15px;
 }
 
+/* O BOTÃO QUE ESTAVA "FEIO": Verde IFRO blindado */
+.btn-post {
+    width: 100% !important;
+    background: var(--accent-green) !important;
+    color: black !important;
+    font-weight: bold !important;
+    padding: 15px !important;
+    border: none !important;
+    border-radius: 6px !important;
+    cursor: pointer !important;
+    font-size: 1.1rem !important;
+    text-transform: uppercase;
+}
+
 .code-block-fixed {
-    height: 300px;
-    overflow-y: auto;
-    background: #0d1117; /* Você pode trocar por var(--code-bg) se tiver */
-    color: #e6edf3;
+    height: 250px !important;
+    overflow-y: auto !important;
+    background: #0d1117;
     padding: 15px;
     border-radius: 8px;
-    font-family: 'Courier New', monospace;
     border: 1px solid var(--border);
-    margin: 15px 0;
+    font-family: monospace;
+    white-space: pre;
+    margin-bottom: 15px;
 }
 
-.code-block-fixed::-webkit-scrollbar {
-    width: 8px;
-}
-.code-block-fixed::-webkit-scrollbar-thumb {
-    background: var(--border);
-    border-radius: 4px;
+/* --- ESTILIZAÇÃO DOS BOTÕES DE ARQUIVO --- */
+
+/* 1. Esconde o "Escolher arquivo" nativo do navegador */
+.file-inputs input[type="file"] {
+    display: none !important;
 }
 
-.post-media {
-    max-width: 100%;
-    border-radius: 8px;
-    margin-top: 10px;
-    display: block;
-    border: 1px solid var(--border);
-}
-
-.file-attachment {
-    margin-top: 15px;
-    padding: 12px;
-    background: var(--card-bg); /* Reutilizando sua variável */
-    border: 1px solid var(--border);
-    border-radius: 6px;
+/* 2. Container para alinhar as labels lado a lado */
+.file-inputs {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    flex-wrap: wrap; /* Garante que não quebre em telas menores */
 }
 
-.file-attachment a {
-    color: var(--accent);
-    text-decoration: none;
+/* 3. A label vira o seu novo botão estiloso */
+.custom-file-label {
+    background: #21262d; /* Cinza escuro GitHub */
+    border: 1px solid var(--border);
+    padding: 10px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: var(--accent-gray);
+    transition: 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.custom-file-label:hover {
+    background: #30363d;
+    color: white;
+    border-color: var(--accent-green); /* Destaque verde no hover */
+}
+
+/* 4. Estilo do Preview (para não ficar solto no layout) */
+#preview-area {
+    margin: 20px 0;
+    padding: 15px;
+    background: rgba(22, 27, 34, 0.5); /* Fundo sutil para destacar */
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+    text-align: center;
+    display: none; /* Só aparece via JS */
+}
+
+#img-preview, #vid-preview {
+    max-width: 100%;
+    max-height: 250px; /* Sua altura máxima de segurança */
+    border-radius: 6px;
+    object-fit: contain; /* Garante que a imagem não estique */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}
+
+#file-name-preview {
+    margin-top: 10px;
+    font-size: 0.85rem;
+    color: var(--accent-green); /* Verde IFRO para feedback */
     font-weight: bold;
-    font-size: 0.9rem;
 }

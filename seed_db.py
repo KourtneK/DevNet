@@ -2,7 +2,7 @@ import random
 from app import app
 from config_banco import db, User, Post
 
-def popular_banco_em_massa(quantidade=100):
+def popular_banco_em_massa(quantidade=99):
     with app.app_context():
         nomes = ["Lucas", "Marcos", "Julia", "Pedro", "Ana", "Dev", "Coder", "Syntax", "Null", "Root"]
         sufixos = ["_Rondonia", "_IFRO", "_Soberano", "_Vanilla", "_Hero", "01", "07", "XP", "Dev"]
@@ -44,4 +44,4 @@ def popular_banco_em_massa(quantidade=100):
             print(f"❌ Erro crítico no seed: {e}")
 
 if __name__ == "__main__":
-    popular_banco_em_massa(100)
+    popular_banco_em_massa(99)

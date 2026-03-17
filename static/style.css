@@ -1,23 +1,23 @@
 :root {
-    background-image: url(images/fundo.png);
+    /* Caminho absoluto para garantir que a imagem apareça em qualquer PC */
+    --bg-image: url('/static/images/fundo.png');
     --card-bg: rgb(0, 0, 0);
     --text-main: rgb(255, 255, 255);
-    --accent-blue: rgb(21, 17, 72);
     --border: rgb(89, 89, 89);
     --accent-green: rgb(59, 185, 80);
     --accent-gray: rgb(139, 139, 139);
-    -webkit-text-fill-color: rgb(255, 255, 255);
 }
 
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Segoe UI', sans-serif;
 }
 
 body {
-    background-color: var(--bg-color);
+    background-image: var(--bg-image);
+    background-color: #0d1117; /* Fundo de segurança caso a imagem falhe */
     color: var(--text-main);
     display: flex;
     flex-direction: column;
@@ -29,19 +29,12 @@ body {
     background-position: center;
 }
 
-/* Cabeçalho */
-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
 h1 {
     margin-bottom: 20px;
-    color: var(--accent);
+    color: white; /* Voltando para o branco que você prefere */
 }
 
-/* Navegação */
+/* Navegação centralizada */
 nav {
     margin-top: 30px;
     padding: 15px;
@@ -67,7 +60,7 @@ nav {
     border-color: var(--accent);
 }
 
-/* Botões específicos com cores */
+/* Indicadores Laterais das Rotas */
 .button-home { border-left: 4px solid #79c0ff; }
 .button-feed { border-left: 4px solid #3fb950; }
 .button-perfil { border-left: 4px solid #d2a8ff; }
