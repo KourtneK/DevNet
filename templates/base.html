@@ -11,9 +11,6 @@
     <title>DevNet - {% block title %}{% endblock %}</title>
 </head>
 <body>
-    
-    {% block content %}{% endblock %}
-
     <nav>
         {% if request.path != '/' %}
             <a href="/" class="btn button-home">Home</a>
@@ -39,6 +36,8 @@
             {% endif %}
         {% endif %}
     </nav>
+    
+    {% block content %}{% endblock %}
 
     <script src="/static/script.js"></script>
     
