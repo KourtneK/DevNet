@@ -1,4 +1,4 @@
-# Estrutura de Pastas do Projeto DevNet
+# Estrutura de Pastas e arquivos do projeto
 
 ```
 DevNet/
