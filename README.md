@@ -1,5 +1,8 @@
 # Estrutura de Pastas e arquivos do projeto
 
+# Rode o arquivo "setup.bat" para criar um ambiente virtual python e instalar as dependencias do projeto DevNet
+
+
 ```
 DevNet/
 ├───.gitignore
