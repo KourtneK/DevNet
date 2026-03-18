@@ -1,0 +1,38 @@
+# Estrutura de Pastas do Projeto DevNet
+
+```
+DevNet/
+├───.gitignore
+├───app.py
+├───config_banco.py
+├───LICENSE
+├───requeriments.txt
+├───seed_db.py
+|
+├───static/
+│   ├───favicon.ico
+│   ├───script.js
+│   ├───style.css
+|   |
+│   ├───images/
+│   │   └───fundo.png
+|   |
+│   ├───stylecss/
+│   │   ├───admin.css
+│   │   ├───config.css
+│   │   ├───feed.css
+│   │   ├───index.css
+│   │   ├───login.css
+│   │   └───perfil.css
+|   |
+│   └───uploads/
+|                   
+└───templates/
+    ├───base.html
+    ├───config.html
+    ├───feed.html
+    ├───index.html
+    ├───login.html
+    ├───painel-adm.html
+    └───perfil.html
+```
