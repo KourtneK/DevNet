@@ -42,7 +42,7 @@ os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 GITHUB_CLIENT_ID = os.getenv("GITHUB_CLIENT_ID")
 GITHUB_CLIENT_SECRET = os.getenv("GITHUB_CLIENT_SECRET")
 ADMINS_AUTORIZADOS = [
-    'lucasdanielrocha2009@gmail.com', # Sua identidade soberana
+    'lucasdanielrocha2009@gmail.com',
 ]
 
 # =========================================================
