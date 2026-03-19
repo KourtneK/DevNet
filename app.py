@@ -1,13 +1,13 @@
 from flask import Flask, render_template, request, redirect, url_for, session, send_from_directory
 from flask_cors import CORS
-from config_banco import db, User, Post
+from config_banco import db, User, Post, Interaction
 from dotenv import load_dotenv
 import os
 import requests
 from sqlalchemy import or_
 import mimetypes
 from werkzeug.utils import secure_filename
-from datetime import datetime
+from datetime import *
 
 # =========================================================
 # 1. CONFIGURAÇÕES INICIAIS E AMBIENTE
@@ -24,6 +24,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'devnet.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = os.getenv("FLASK_SECRET_KEY")
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=3650)
 
 # Inicialização do Banco de Dados
 db.init_app(app)
@@ -66,7 +67,7 @@ def login_github():
 def github_callback():
     code = request.args.get('code')
     
-    # Troca o código temporário pelo Access Token
+    # 1. Troca o código temporário pelo Access Token
     token_resp = requests.post(
         'https://github.com/login/oauth/access_token',
         data={
@@ -79,13 +80,13 @@ def github_callback():
     
     access_token = token_resp.get('access_token')
 
-    # Recupera dados do perfil (Username, Avatar, Bio)
+    # 2. Recupera dados do perfil (Username, Avatar, Bio)
     user_data = requests.get(
         'https://api.github.com/user',
         headers={'Authorization': f'token {access_token}'}
     ).json()
 
-    # Recupera o e-mail primário verificado (essencial para a tranca admin)
+    # 3. Recupera o e-mail primário verificado
     emails_resp = requests.get(
         'https://api.github.com/user/emails',
         headers={'Authorization': f'token {access_token}'}
@@ -96,7 +97,7 @@ def github_callback():
     github_avatar = user_data.get('avatar_url')
     github_bio = user_data.get('bio')
 
-    # Sincronização Inteligente com o Banco de Dados
+    # 4. Sincronização com o Banco de Dados
     user = User.query.filter_by(username=github_username).first()
 
     if not user:
@@ -104,20 +105,20 @@ def github_callback():
             username=github_username, 
             email=github_email,
             avatar_url=github_avatar,
-            bio=github_bio # Salva a bio na primeira vez
+            bio=github_bio
         )
         db.session.add(user)
     else:
-        # Atualiza apenas e-mail e avatar
         user.email = github_email
         user.avatar_url = github_avatar
-        # SÓ atualiza a bio se ela estiver vazia na DevNet
         if not user.bio:
             user.bio = github_bio
 
     db.session.commit()
     
-    # Persistência da sessão
+    # 5. PERSISTÊNCIA ATIVADA
+    # Isso impede o logout automático ao reiniciar o servidor
+    session.permanent = True 
     session['user_id'] = user.id
     session['username'] = user.username
     session['access_token'] = access_token
@@ -176,6 +177,50 @@ def criar_post():
     db.session.add(novo_post)
     db.session.commit()
     return redirect(url_for('feed'))
+
+@app.route('/post')
+def post_view():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    return render_template('post.html')
+
+@app.route('/interagir/<string:tipo>/<int:post_id>', methods=['POST'])
+def interagir(tipo, post_id):
+    user_id = session.get('user_id')
+    if not user_id:
+        return {"erro": "Não autorizado"}, 401
+
+    post = db.session.get(Post, post_id)
+    if not post:
+        return {"erro": "Post não encontrado"}, 404
+
+    # Busca se já existe uma interação desse usuário com esse post
+    existente = Interaction.query.filter_by(user_id=user_id, post_id=post_id).first()
+
+    if existente:
+        if existente.type == tipo:
+            # O usuário clicou no mesmo botão: Removemos a interação (Toggle Off)
+            db.session.delete(existente)
+        else:
+            # O usuário mudou de ideia: Troca de Like para Dislike ou vice-versa
+            existente.type = tipo
+    else:
+        # Nova interação: Cria o vínculo no banco
+        nova = Interaction(user_id=user_id, post_id=post_id, type=tipo)
+        db.session.add(nova)
+
+    db.session.commit()
+
+    # Recalcula os totais baseados na tabela de vínculos para garantir precisão real
+    post.likes = Interaction.query.filter_by(post_id=post_id, type='like').count()
+    post.dislikes = Interaction.query.filter_by(post_id=post_id, type='dislike').count()
+    db.session.commit()
+
+    return {
+        "likes": post.likes,
+        "dislikes": post.dislikes
+    }
+
 
 # =========================================================
 # 4. PERFIL E CONFIGURAÇÕES

@@ -4,62 +4,62 @@
     <link rel="stylesheet" href="/static/stylecss/feed.css">
 {% endblock %}
 
+{% block title %}Feed Principal{% endblock %}
+
 {% block content %}
 <div class="feed-container">
-    
-    <div class="post-form-container">
-        <form action="/postar" method="POST" enctype="multipart/form-data">
-            <textarea name="content" class="fixed-input" placeholder="O que você está pensando?"></textarea>
-            
-            <textarea name="code_content" class="fixed-code-input">dev.( 
-
-
-
-
-).dev</textarea>
-
-            <div class="file-inputs">
-                <label for="img" class="custom-file-label">🖼️ Anexar imagem</label>
-                <input type="file" id="img" name="image" accept="image/*" onchange="mostrarPreview(this, 'image')">
-
-                <label for="vid" class="custom-file-label">🎥 Anexar vídeo</label>
-                <input type="file" id="vid" name="video" accept="video/*" onchange="mostrarPreview(this, 'video')">
-
-                <label for="att" class="custom-file-label">📁 Anexar arquivo</label>
-                <input type="file" id="att" name="attachment" onchange="mostrarPreview(this, 'file')">
-            </div>
-
-            <div id="preview-area">
-                <img id="img-preview">
-                <video id="vid-preview" controls></video>
-                <p id="file-name-preview"></p>
-            </div>
-
-            <button type="submit" class="btn-post">Publicar</button>
-        </form>
-    </div>
-
     {% for post in posts %}
     <div class="post-card">
         <div class="post-header">@{{ post.author.username }}</div>
         
-        {% if post.content %}<p class="post-text">{{ post.content }}</p>{% endif %}
+        <div class="post-body-unified">
+            {% if post.content %}
+                <p class="post-text">{{ post.content }}</p>
+            {% endif %}
 
-        {% if post.code_content %}
-            <div class="code-block-fixed"><code>{{ post.code_content }}</code></div>
-        {% endif %}
+            <div class="post-media-container">
+                {% if post.image_path %}
+                    <img src="/static/uploads/{{ post.image_path }}" class="post-media">
+                {% endif %}
+                
+                {% if post.video_path %}
+                    <video controls class="post-media">
+                        <source src="/static/uploads/{{ post.video_path }}">
+                    </video>
+                {% endif %}
+            </div>
 
-        <div class="post-media-container">
-            {% if post.image_path %}<img src="/static/uploads/{{ post.image_path }}" class="post-media">{% endif %}
-            {% if post.video_path %}<video controls class="post-media"><source src="/static/uploads/{{ post.video_path }}"></video>{% endif %}
+            {% if post.code_content %}
+                <div class="code-block-fixed">
+                    <code>{{ post.code_content }}</code>
+                </div>
+            {% endif %}
+
+            {% if post.file_path %}
+                <div class="file-attachment">
+                    <span>📎 Arquivo: <strong>{{ post.file_extension }}</strong></span>
+                    <a href="/static/uploads/{{ post.file_path }}" download>Download</a>
+                </div>
+            {% endif %}
         </div>
 
-        {% if post.file_path %}
-            <div class="file-attachment">
-                <span>📎 Arquivo: <strong>{{ post.file_extension }}</strong></span>
-                <a href="/static/uploads/{{ post.file_path }}" download>Download</a>
-            </div>
-        {% endif %}
+        <div class="post-footer">
+            <button class="btn-action" onclick="interagirPost('{{ post.id }}', 'like')">
+                👍 <span id="likes-count-{{ post.id }}">{{ post.likes or 0 }}</span>
+            </button>
+
+            <button class="btn-action" onclick="interagirPost('{{ post.id }}', 'dislike')">
+                👎 <span id="dislikes-count-{{ post.id }}">{{ post.dislikes or 0 }}</span>
+            </button>
+
+            <button class="btn-action" onclick="avisarDesenvolvimento('comentários')">
+                💬 Comentar
+            </button>
+
+            <button class="btn-action" onclick="avisarDesenvolvimento('compartilhamento')">
+                🔗 Compartilhar
+            </button>
+        </div>
     </div>
     {% endfor %}
 </div>

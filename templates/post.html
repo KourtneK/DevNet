@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="/static/stylecss/feed.css">
+{% endblock %}
+
+{% block title %}Criar Post{% endblock %}
+
+{% block content %}
+<div class="feed-container">
+    <div class="post-form-container">
+        <form action="/postar" method="POST" enctype="multipart/form-data">
+            <textarea name="content" class="fixed-input" placeholder="O que você está pensando?"></textarea>
+            
+            <textarea name="code_content" class="fixed-code-input">dev.( 
+
+
+
+
+).dev</textarea>
+
+            <div class="file-inputs">
+                <label for="att" class="custom-file-label">📁 Arquivo</label>
+                <input type="file" id="att" name="attachment" onchange="mostrarPreview(this, 'file')">
+            </div>
+
+            <div class="file-inputs">
+                <label for="img" class="custom-file-label">🖼️ Imagem</label>
+                <input type="file" id="img" name="image" accept="image/*" onchange="mostrarPreview(this, 'image')">
+            </div>
+
+            <div class="file-inputs">
+                <label for="vid" class="custom-file-label">🎥 Vídeo</label>
+                <input type="file" id="vid" name="video" accept="video/*" onchange="mostrarPreview(this, 'video')">
+            </div>
+
+            <div id="preview-area">
+                <img id="img-preview">
+                <video id="vid-preview" controls></video>
+                <p id="file-name-preview"></p>
+            </div>
+
+            <button type="submit" class="btn-post">Publicar agora</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -21,6 +21,10 @@
                 <a href="/feed" class="btn button-feed">Feed</a>
             {% endif %}
 
+            {% if request.path == '/feed' %}
+                <a href="/post" class="btn button-post">Post</a>
+            {% endif %}
+
             {% if request.path != '/config' %}
                 <a href="/config" class="btn button-cfg">Configurações</a>
             {% endif %}

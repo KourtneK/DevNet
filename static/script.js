@@ -5,6 +5,10 @@
 
 // --- FUNÇÕES DO FEED (POSTAGEM UNIVERSAL) ---
 
+function avisarDesenvolvimento(recurso) {
+    alert(`O sistema de ${recurso} está em desenvolvimento!`);
+}
+
 /* - Lógica de Visualização Simultânea */
 function mostrarPreview(input, tipo) {
     const area = document.getElementById('preview-area');
@@ -66,3 +70,30 @@ document.addEventListener('DOMContentLoaded', () => {
     
     console.log("DevNet Engine: Sistema carregado e funções prontas. 🚀");
 });
+
+// Interagir com posts
+async function interagirPost(postId, tipo) {
+    try {
+        const response = await fetch(`/interagir/${tipo}/${postId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            
+            // Busca os spans específicos pelo ID único do post
+            const likeSpan = document.getElementById(`likes-count-${postId}`);
+            const dislikeSpan = document.getElementById(`dislikes-count-${postId}`);
+            
+            if (likeSpan) likeSpan.innerText = data.likes;
+            if (dislikeSpan) dislikeSpan.innerText = data.dislikes;
+            
+            console.log(`DevNet Engine: ${tipo} registrado no post ${postId}`);
+        } else {
+            console.error("Erro na interação:", response.statusText);
+        }
+    } catch (error) {
+        console.error("Erro de conexão com o motor:", error);
+    }
+}

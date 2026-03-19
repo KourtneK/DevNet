@@ -1,5 +1,5 @@
 @echo off
-title DevNet Setup - IFRO Edition
+title DevNet Setup
 echo 🚀 Iniciando configuracao automatica...
 
 :: 1. Criando o ambiente isolado

@@ -6,6 +6,12 @@
     --border: rgb(89, 89, 89);
     --accent-green: rgb(59, 185, 80);
     --accent-gray: rgb(139, 139, 139);
+    --accent-gold: rgb(177, 171, 57);
+    --accent-home: rgb(121, 192, 255);
+    --accent-feed: rgb(63, 185, 80);
+    --accent-perfil: rgb(210, 168, 255);
+    --accent-config: rgb(139, 148, 158);
+    --accent-login: rgb(248, 81, 73);
 }
 
 * {
@@ -61,8 +67,9 @@ nav {
 }
 
 /* Indicadores Laterais das Rotas */
-.button-home { border-left: 4px solid #79c0ff; }
-.button-feed { border-left: 4px solid #3fb950; }
-.button-perfil { border-left: 4px solid #d2a8ff; }
-.button-cfg { border-left: 4px solid #8b949e; }
-.button-login { border-left: 4px solid #f85149; }
+.button-home { border-left: 4px solid var(--accent-home); }
+.button-feed { border-left: 4px solid var(--accent-feed); }
+.button-perfil { border-left: 4px solid var(--accent-perfil); }
+.button-cfg { border-left: 4px solid var(--accent-config); }
+.button-login { border-left: 4px solid var(--accent-login); }
+.button-post { border-left: 4px solid var(--accent-gold); }
