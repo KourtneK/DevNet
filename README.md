@@ -2,40 +2,55 @@
 
 # Execute o arquivo "setup.bat" para criar um ambiente virtual python e instalar as dependencias do projeto
 
-
 ```
-DevNet/
+c:\Users\Aluno\Desktop\DevNet\
 ├───.gitignore
 ├───app.py
 ├───config_banco.py
 ├───LICENSE
+├───README.md
 ├───requeriments.txt
 ├───seed_db.py
-|
-├───static/
+├───setup.bat
+├───static\
+|   |
 │   ├───favicon.ico
 │   ├───script.js
 │   ├───style.css
 |   |
-│   ├───images/
+│   ├───images\
 │   │   └───fundo.png
 |   |
-│   ├───stylecss/
+│   ├───stylecss\
 │   │   ├───admin.css
 │   │   ├───config.css
 │   │   ├───feed.css
 │   │   ├───index.css
 │   │   ├───login.css
-│   │   └───perfil.css
+│   │   ├───perfil.css
+│   │   └───post.css
 |   |
-│   └───uploads/
-|                   
-└───templates/
+│   └───uploads\
+│       ├───1_1773708886.376482.png
+│       ├───1_1773708886.383761.mp4
+│       ├───1_1773708886.386179.pdf
+│       ├───1_1773878417.612534.png
+│       ├───1_1773878417.61473.mp4
+│       ├───1_1773878417.617347.pdf
+│       ├───1_1773878842.555599.png
+│       ├───1_1773878842.556811.mp4
+│       ├───1_1773878842.5599.pdf
+│       ├───1_1773881420.043163.png
+│       ├───1_1773881420.044428.mp4
+│       └───1_1773881420.047263.pdf
+|
+└───templates\
     ├───base.html
     ├───config.html
     ├───feed.html
     ├───index.html
     ├───login.html
     ├───painel-adm.html
-    └───perfil.html
+    ├───perfil.html
+    └───post.html
 ```
