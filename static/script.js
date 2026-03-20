@@ -97,3 +97,27 @@ async function interagirPost(postId, tipo) {
         console.error("Erro de conexão com o motor:", error);
     }
 }
+
+// Compartilhamento
+function copiarLink(postId) {
+    // Constrói a URL usando o domínio atual + a rota de visualização
+    const url = window.location.origin + '/ver_post/' + postId;
+
+    navigator.clipboard.writeText(url).then(() => {
+        // Feedback visual de UI/UX: Troca o texto do botão temporariamente
+        const btn = document.getElementById(`btn-share-${postId}`);
+        if (btn) {
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = "✅ Link Copiado!";
+            btn.style.color = "var(--accent-green)";
+
+            // Retorna ao estado original após 2 segundos
+            setTimeout(() => {
+                btn.innerHTML = originalHTML;
+                btn.style.color = "";
+            }, 2000);
+        }
+    }).catch(err => {
+        console.error("Erro ao copiar o link:", err);
+    });
+}

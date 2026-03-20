@@ -25,15 +25,15 @@
             <div class="media-preview-bar">
                 {% if post.image_path or post.video_path or post.file_path %}
                     <div class="media-badges">
-                        {% if post.image_path %}
+                        {% if post.file_path %}
                             <span class="badge badge-file">📎 Arquivo ({{ post.file_extension }})</span>
                         {% endif %}
 
-                        {% if post.video_path %}
+                        {% if post.image_path %}
                             <span class="badge badge-img">🖼️ Imagem</span>
                         {% endif %}
 
-                        {% if post.file_path %}
+                        {% if post.video_path %}
                             <span class="badge badge-video">🎥 Vídeo</span>
                         {% endif %}
                     </div>
