@@ -221,6 +221,44 @@ def interagir(tipo, post_id):
         "dislikes": post.dislikes
     }
 
+# deletar post
+@app.route('/deletar_post/<int:post_id>', methods=['POST'])
+def deletar_post(post_id):
+    user_id = session.get('user_id')
+    if not user_id:
+        return redirect(url_for('login'))
+    
+    post = db.session.get(Post, post_id)
+
+    if post and post.user_id == user_id:
+        # Lista os possíveis caminhos de arquivos atrelados ao post
+        arquivos_para_deletar = [post.image_path, post.video_path, post.file_path]
+        
+        for nome_arquivo in arquivos_para_deletar:
+            if nome_arquivo:
+                caminho_completo = os.path.join(app.config['UPLOAD_FOLDER'], nome_arquivo)
+                if os.path.exists(caminho_completo):
+                    os.remove(caminho_completo) # Deleta o arquivo do disco
+        
+        #deleta do banco de dados
+        db.session.delete(post)
+        db.session.commit()
+    
+    return redirect(url_for('feed'))
+
+@app.route('/ver_post/<int:post_id>')
+def ver_post(post_id):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    # Busca o post específico no banco usando o ID da URL
+    post = db.session.get(Post, post_id)
+    
+    if not post:
+        return "Post não encontrado", 404
+        
+    # Carrega o molde exclusivo para um único post
+    return render_template('post_detalhe.html', post=post)
 
 # =========================================================
 # 4. PERFIL E CONFIGURAÇÕES

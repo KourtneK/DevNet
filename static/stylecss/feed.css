@@ -199,3 +199,25 @@
     max-height: 250px;
     border-radius: 6px;
 }
+
+.media-badges {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.badge {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.badge-img { color: var(--accent-feed); border-color: var(--accent-feed); }
+.badge-video { color: var(--accent-gold); border-color: var(--accent-gold); }
+.badge-file { color: var(--accent-home); border-color: var(--accent-home); }

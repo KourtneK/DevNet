@@ -4,17 +4,11 @@
     <link rel="stylesheet" href="/static/stylecss/feed.css">
 {% endblock %}
 
-{% block title %}Feed Principal{% endblock %}
-
 {% block content %}
 <div class="feed-container">
-    {% for post in posts %}
-    <div class="post-card">
-
+    <div class="post-card" style="border: 1px solid var(--accent-color); margin-top: 20px;">
         <div class="post-header">
-            <a href="{{ url_for('ver_post', post_id=post.id) }}" style="text-decoration: none; color: inherit;">
-                @{{ post.author.username }}
-            </a>
+            @{{ post.author.username }} • Post #{{ "%04d" | format(post.id) }}
         </div>
         
         <div class="post-body-unified">
@@ -25,57 +19,55 @@
             <div class="media-preview-bar">
                 {% if post.image_path or post.video_path or post.file_path %}
                     <div class="media-badges">
-                        {% if post.image_path %}
+                        {% if post.file_path %}
                             <span class="badge badge-file">📎 Arquivo ({{ post.file_extension }})</span>
                         {% endif %}
 
-                        {% if post.video_path %}
-                            <span class="badge badge-img">🖼️ Imagem</span>
+                        {% if post.image_path %}
+                           <span class="badge badge-img">🖼️ Imagem</span>
                         {% endif %}
 
-                        {% if post.file_path %}
+                        {% if post.video_path %}
                             <span class="badge badge-video">🎥 Vídeo</span>
                         {% endif %}
                     </div>
                 {% endif %}
             </div>
+            
+            <div class="post-media-container">
+                {% if post.image_path %}
+                    <img src="/static/uploads/{{ post.image_path }}" class="post-media">
+                {% endif %}
+                
+                {% if post.video_path %}
+                    <video controls class="post-media">
+                        <source src="/static/uploads/{{ post.video_path }}">
+                    </video>
+                {% endif %}
+            </div>
 
             {% if post.code_content %}
                 <div class="code-block-fixed">
-                    <code>{{ post.code_content }}</code>
+                    <pre><code>{{ post.code_content }}</code></pre>
                 </div>
             {% endif %}
-            
-            </div>
+        </div>
 
         <div class="post-footer">
-            <button class="btn-action" onclick="interagirPost('{{ post.id }}', 'like')">
-                👍 <span id="likes-count-{{ post.id }}">{{ post.likes or 0 }}</span>
-            </button>
-
-            <button class="btn-action" onclick="interagirPost('{{ post.id }}', 'dislike')">
-                👎 <span id="dislikes-count-{{ post.id }}">{{ post.dislikes or 0 }}</span>
-            </button>
-
-            <button class="btn-action" onclick="avisarDesenvolvimento('comentários')">
-                💬 Comentar
-            </button>
-
-            <button class="btn-action" onclick="avisarDesenvolvimento('compartilhamento')">
-                🔗 Compartilhar
-            </button>
-
+            <a href="{{ url_for('feed') }}" class="btn-action" style="text-decoration: none;">
+                ⬅ Voltar ao Feed
+            </a>
+            
             {% if session.get('user_id') == post.user_id %}
                 <form action="{{ url_for('deletar_post', post_id=post.id) }}" method="POST" style="display: inline;">
                     <button type="submit" class="btn-action"
                             style="color: var(--btn-login); border-color: var(--btn-login);"
                             onclick="return confirm('Deseja mesmo apagar este post?')">
-                        🗑️ Deletar post
+                        🗑️ Deletar
                     </button>
                 </form>
             {% endif %}
         </div>
     </div>
-    {% endfor %}
 </div>
 {% endblock %}
