@@ -121,3 +121,27 @@ function copiarLink(postId) {
         console.error("Erro ao copiar o link:", err);
     });
 }
+
+function toggleComentario() {
+    const area = document.getElementById('area-comentario');
+    const campo = document.getElementById('campo-texto-comentario');
+    
+    // Vanilla puro: Se estiver escondido, mostra. Se estiver visível, esconde.
+    if (area.style.display === 'none' || area.style.display === '') {
+        area.style.display = 'block';
+        campo.focus(); // Coloca o cursor no texto automaticamente
+    } else {
+        area.style.display = 'none';
+    }
+}
+
+// Escutador de carregamento: Verifica se o usuário "quis" comentar vindo do feed
+document.addEventListener('DOMContentLoaded', () => {
+    // Se a URL terminar em #comentar, abre o formulário direto
+    if (window.location.hash === '#comentar') {
+        toggleComentario();
+    }
+    
+    // Mantém suas outras inicializações
+    filtrarRepositorios();
+});

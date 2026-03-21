@@ -7,8 +7,34 @@
 {% block content %}
 <div class="feed-container">
     <div class="post-card" style="border: 1px solid var(--accent-color); margin-top: 20px;">
-        <div class="post-header">
-            @{{ post.author.username }} • Post #{{ "%04d" | format(post.id) }}
+        <div class="comments-section" style="margin-top: 30px;">
+            <h3 style="color: var(--accent-color);">💬 Comentários</h3>
+
+            <form id="area-comentario" action="{{ url_for('comentar', post_id=post.id) }}" method="POST" 
+                class="post-form-container" style="display: none;">
+                <textarea name="comment_text" id="campo-texto-comentario" placeholder="Escreva um comentário..." class="fixed-input" required></textarea>
+                <textarea name="comment_code" placeholder="Cole um trecho de código aqui (opcional)..." class="fixed-code-input"></textarea>
+                <button type="submit" class="btn-post">Enviar Comentário</button>
+            </form>
+
+            <div class="comments-list">
+                {% for comment in post.comments | sort(attribute='date_posted', reverse=True) %}
+                    <div class="post-card" style="border-left: 4px solid var(--accent-home); margin-bottom: 15px; padding: 15px;">
+                        <div class="post-header" style="font-size: 0.85rem;">
+                            @{{ comment.author.username }} • {{ comment.date_posted.strftime('%d/%m %H:%M') }}
+                        </div>
+                        <p class="post-text">{{ comment.content }}</p>
+                        
+                        {% if comment.code_content %}
+                            <div class="code-block-fixed" style="max-height: 200px;">
+                                <pre><code>{{ comment.code_content }}</code></pre>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <p style="color: var(--accent-gray); font-style: italic;">Nenhum comentário ainda. Seja o primeiro!</p>
+                {% endfor %}
+            </div>
         </div>
         
         <div class="post-body-unified">
@@ -57,6 +83,20 @@
             <a href="{{ url_for('feed') }}" class="btn-action" style="text-decoration: none;">
                 ⬅ Voltar ao Feed
             </a>
+
+            <button class="btn-action" onclick="interagirPost('{{ post.id }}', 'like')">
+                👍 <span id="likes-count-{{ post.id }}">{{ post.likes or 0 }}</span>
+            </button>
+
+            <button class="btn-action" onclick="interagirPost('{{ post.id }}', 'dislike')">
+                👎 <span id="dislikes-count-{{ post.id }}">{{ post.dislikes or 0 }}</span>
+            </button>
+
+            <button class="btn-action" onclick="toggleComentario()">💬 Comentar</button>
+
+            <button class="btn-action" id="btn-share-{{ post.id }}" onclick="copiarLink('{{ post.id }}')">
+                🔗 Compartilhar
+            </button>
             
             {% if session.get('user_id') == post.user_id %}
                 <form action="{{ url_for('deletar_post', post_id=post.id) }}" method="POST" style="display: inline;">

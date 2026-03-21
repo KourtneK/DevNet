@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session, send_from_directory
 from flask_cors import CORS
-from config_banco import db, User, Post, Interaction
+from config_banco import db, User, Post, Interaction, Comment
 from dotenv import load_dotenv
 import os
 import requests
@@ -259,6 +259,30 @@ def ver_post(post_id):
         
     # Carrega o molde exclusivo para um único post
     return render_template('post_detalhe.html', post=post)
+
+@app.route('/comentar/<int:post_id>', methods=['POST'])
+def comentar(post_id):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    conteudo = request.form.get('comment_text')
+    codigo = request.form.get('comment_code')
+    
+    if conteudo:
+        novo_comentario = Comment(
+            content=conteudo,
+            code_content=codigo,
+            user_id=session['user_id'],
+            post_id=post_id
+        )
+        db.session.add(novo_comentario)
+        db.session.commit()
+        
+    return redirect(url_for('ver_post', post_id=post_id))
+
+
+
+
 
 # =========================================================
 # 4. PERFIL E CONFIGURAÇÕES

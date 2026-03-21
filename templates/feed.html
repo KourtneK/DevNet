@@ -57,11 +57,9 @@
                 👎 <span id="dislikes-count-{{ post.id }}">{{ post.dislikes or 0 }}</span>
             </button>
 
-            <button class="btn-action" onclick="avisarDesenvolvimento('comentários')">
-                💬 Comentar
-            </button>
+            <button class="btn-action" onclick="toggleComentario()">💬 Comentar</button>
 
-            <button class="btn-action" onclick="avisarDesenvolvimento('compartilhamento')">
+            <button class="btn-action" id="btn-share-{{ post.id }}" onclick="copiarLink('{{ post.id }}')">
                 🔗 Compartilhar
             </button>
 
