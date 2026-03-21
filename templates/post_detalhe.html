@@ -61,52 +61,6 @@
             {% endif %}
         </div>
 
-        <div class="comments-list">
-                {% for comment in post.comments if not comment.parent_id %}
-                    <div class="post-card" style="border-left: 4px solid var(--accent-home); margin-bottom: 20px; padding: 15px;">
-                        <div class="post-header" style="font-size: 0.8rem;">
-                            @{{ comment.author.username }} • {{ comment.date_posted.strftime('%d/%m %H:%M') }}
-                        </div>
-                        <p class="post-text">{{ comment.content }}</p>
-                        
-                        {% if comment.code_content %}
-                            <div class="code-block-fixed" style="max-height: 150px;"><pre><code>{{ comment.code_content }}</code></pre></div>
-                        {% endif %}
-
-                        <div class="post-footer" style="border-top: none; padding: 0; margin-top: 10px;">
-                            <button class="btn-action" style="font-size: 0.7rem;" onclick="votarComentario('{{ comment.id }}', 'like')">
-                                👍 <span id="c-likes-{{ comment.id }}">{{ comment.likes or 0 }}</span>
-                            </button>
-                            <button class="btn-action" style="font-size: 0.7rem;" onclick="votarComentario('{{ comment.id }}', 'dislike')">
-                                👎 <span id="c-dislikes-{{ comment.id }}">{{ comment.dislikes or 0 }}</span>
-                            </button>
-                            <button class="btn-action" style="font-size: 0.7rem;" onclick="abrirResposta('{{ comment.id }}')">
-                                ↩ Responder
-                            </button>
-                        </div>
-
-                        <div id="reply-{{ comment.id }}" style="display: none; margin-top: 10px; padding-left: 20px;">
-                            <form action="{{ url_for('comentar', post_id=post.id) }}" method="POST">
-                                <input type="hidden" name="parent_id" value="{{ comment.id }}">
-                                <textarea name="comment_text" class="fixed-input" style="height: 60px;" placeholder="Responda..." required></textarea>
-                                <button type="submit" class="btn-post" style="padding: 5px 15px;">Enviar</button>
-                            </form>
-                        </div>
-
-                        {% if comment.replies %}
-                            <div class="replies-area" style="margin-left: 30px; margin-top: 15px; border-left: 1px dashed var(--accent-gray);">
-                                {% for reply in comment.replies %}
-                                    <div style="padding-left: 10px; margin-bottom: 10px;">
-                                        <span style="color: var(--accent-color); font-size: 0.8rem;">@{{ reply.author.username }}:</span>
-                                        <p class="post-text" style="font-size: 0.9rem; margin: 0;">{{ reply.content }}</p>
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        {% endif %}
-                    </div>
-                {% endfor %}
-            </div>
-
         <div class="post-footer">
             <a href="{{ url_for('feed') }}" class="btn-action" style="text-decoration: none;">
                 ⬅ Voltar ao Feed
@@ -136,6 +90,57 @@
                 </form>
             {% endif %}
         </div>
+
+        <div class="comments-list">
+                {% for comment in post.comments if not comment.parent_id %}
+                    <div class="post-card" style="border-left: 4px solid var(--accent-home); margin-bottom: 20px; padding: 15px;">
+                        <div class="post-header" style="font-size: 0.8rem;">
+                            @{{ comment.author.username }} • {{ comment.date_posted.strftime('%d/%m %H:%M') }}
+                        </div>
+                        <p class="post-text">{{ comment.content }}</p>
+                        
+                        {% if comment.code_content %}
+                            <div class="code-block-fixed" style="max-height: 150px;"><pre><code>{{ comment.code_content }}</code></pre></div>
+                        {% endif %}
+
+                        <div class="post-footer" style="border-top: none; padding: 0; margin-top: 10px;">
+                            <button class="btn-action" style="font-size: 0.7rem;" onclick="votarComentario('{{ comment.id }}', 'like')">
+                                👍 <span id="c-likes-{{ comment.id }}">{{ comment.likes or 0 }}</span>
+                            </button>
+                            <button class="btn-action" style="font-size: 0.7rem;" onclick="votarComentario('{{ comment.id }}', 'dislike')">
+                                👎 <span id="c-dislikes-{{ comment.id }}">{{ comment.dislikes or 0 }}</span>
+                            </button>
+                            <button class="btn-action" style="font-size: 0.7rem;" onclick="abrirResposta('{{ comment.id }}', '{{ comment.author.username }}')">
+                                ↩ Responder
+                            </button>
+                        </div>
+
+                        <div id="reply-{{ comment.id }}" style="display: none; margin-top: 10px; padding-left: 20px;">
+                            <form action="{{ url_for('comentar', post_id=post.id) }}" method="POST">
+                                <input type="hidden" name="parent_id" value="{{ comment.id }}">
+                                <textarea name="comment_text" class="fixed-input" style="height: 60px;" placeholder="Responda..." required></textarea>
+                                <button type="submit" class="btn-post" style="padding: 5px 15px;">Enviar</button>
+                            </form>
+                        </div>
+
+                        {% if comment.replies %}
+                            <div class="replies-area" style="margin-left: 30px; margin-top: 15px; border-left: 1px dashed var(--accent-gray);">
+                                {% for reply in comment.replies %}
+                                    <div style="padding-left: 10px; margin-bottom: 15px;">
+                                        
+                                        <div class="reply-citation">
+                                            <strong>@{{ comment.author.username }}:</strong> 
+                                            {{ comment.content | truncate(50) }} </div>
+
+                                        <span style="color: var(--accent-color); font-size: 0.8rem;">@{{ reply.author.username }}:</span>
+                                        <p class="post-text" style="font-size: 0.9rem; margin: 0;">{{ reply.content }}</p>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
     </div>
 </div>
 {% endblock %}

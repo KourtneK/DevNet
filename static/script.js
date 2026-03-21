@@ -161,3 +161,16 @@ function abrirResposta(id) {
     const div = document.getElementById(`reply-${id}`);
     div.style.display = (div.style.display === 'none') ? 'block' : 'none';
 }
+
+function abrirResposta(id) { // Não precisamos mais passar o username aqui
+    const div = document.getElementById(`reply-${id}`);
+    const textarea = div.querySelector('textarea');
+    
+    // Toggle de visibilidade
+    div.style.display = (div.style.display === 'none') ? 'block' : 'none';
+    
+    if (div.style.display === 'block') {
+        textarea.value = ""; // Garante que o campo comece limpo
+        textarea.focus();    // Deixa o cursor pronto para o dev digitar
+    }
+}

@@ -221,3 +221,14 @@
 .badge-img { color: var(--accent-feed); border-color: var(--accent-feed); }
 .badge-video { color: var(--accent-gold); border-color: var(--accent-gold); }
 .badge-file { color: var(--accent-home); border-color: var(--accent-home); }
+
+.reply-citation {
+    background: rgba(255, 255, 255, 0.05); /* Fundo quase transparente */
+    border-left: 2px solid var(--accent-home); /* Linha fina lateral */
+    padding: 4px 8px;
+    margin-bottom: 8px;
+    border-radius: 4px;
+    font-size: 0.7rem; /* Texto reduzido */
+    color: var(--accent-gray);
+    max-width: fit-content;
+}
