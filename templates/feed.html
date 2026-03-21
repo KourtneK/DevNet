@@ -57,7 +57,7 @@
                 👎 <span id="dislikes-count-{{ post.id }}">{{ post.dislikes or 0 }}</span>
             </button>
 
-            <button class="btn-action" onclick="toggleComentario()">💬 Comentar</button>
+            <button class="btn-action" onclick="window.location.href='{{ url_for('ver_post', post_id=post.id) }}#comentar'">💬 Comentar</button>
 
             <button class="btn-action" id="btn-share-{{ post.id }}" onclick="copiarLink('{{ post.id }}')">
                 🔗 Compartilhar

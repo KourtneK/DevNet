@@ -38,12 +38,22 @@ class Post(db.Model):
     likes = db.Column(db.Integer, default=0)
     dislikes = db.Column(db.Integer, default=0)
 
+class CommentInteraction(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    comment_id = db.Column(db.Integer, db.ForeignKey('comment.id'), nullable=False)
+    type = db.Column(db.String(10), nullable=False) # 'like' ou 'dislike'
+    __table_args__ = (db.UniqueConstraint('user_id', 'comment_id', name='unique_comment_interaction'),)
 class Comment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.Text, nullable=False)
     code_content = db.Column(db.Text)
-    image_path = db.Column(db.String(255))
     date_posted = db.Column(db.DateTime, default=datetime.utcnow)
+    likes = db.Column(db.Integer, default=0)
+    dislikes = db.Column(db.Integer, default=0)
+    parent_id = db.Column(db.Integer, db.ForeignKey('comment.id')) # Para respostas
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
+    post = db.relationship('Post', backref=db.backref('comments', lazy=True))
     author = db.relationship('User', backref=db.backref('comments', lazy=True))
+    replies = db.relationship('Comment', backref=db.backref('parent', remote_side=[id]), lazy=True)

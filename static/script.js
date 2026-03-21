@@ -145,3 +145,19 @@ document.addEventListener('DOMContentLoaded', () => {
     // Mantém suas outras inicializações
     filtrarRepositorios();
 });
+
+async function votarComentario(commentId, tipo) {
+    try {
+        const response = await fetch(`/interagir_comentario/${tipo}/${commentId}`, { method: 'POST' });
+        if (response.ok) {
+            const data = await response.json();
+            document.getElementById(`c-likes-${commentId}`).innerText = data.likes;
+            document.getElementById(`c-dislikes-${commentId}`).innerText = data.dislikes;
+        }
+    } catch (error) { console.error("Erro no motor de comentários:", error); }
+}
+
+function abrirResposta(id) {
+    const div = document.getElementById(`reply-${id}`);
+    div.style.display = (div.style.display === 'none') ? 'block' : 'none';
+}

@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session, send_from_directory
 from flask_cors import CORS
-from config_banco import db, User, Post, Interaction, Comment
+from config_banco import db, User, Post, Interaction, Comment, CommentInteraction
 from dotenv import load_dotenv
 import os
 import requests
@@ -262,23 +262,44 @@ def ver_post(post_id):
 
 @app.route('/comentar/<int:post_id>', methods=['POST'])
 def comentar(post_id):
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
+    if 'user_id' not in session: return redirect(url_for('login'))
     
     conteudo = request.form.get('comment_text')
     codigo = request.form.get('comment_code')
+    parent_id = request.form.get('parent_id') # NOVO: Captura se é uma resposta
     
     if conteudo:
-        novo_comentario = Comment(
-            content=conteudo,
-            code_content=codigo,
-            user_id=session['user_id'],
-            post_id=post_id
-        )
-        db.session.add(novo_comentario)
+        novo = Comment(content=conteudo, code_content=codigo, user_id=session['user_id'], 
+                       post_id=post_id, parent_id=parent_id)
+        db.session.add(novo)
         db.session.commit()
-        
     return redirect(url_for('ver_post', post_id=post_id))
+
+@app.route('/interagir_comentario/<string:tipo>/<int:comment_id>', methods=['POST'])
+def interagir_comentario(tipo, comment_id):
+    user_id = session.get('user_id')
+    if not user_id: return {"erro": "Não autorizado"}, 401
+
+    comment = db.session.get(Comment, comment_id)
+    if not comment: return {"erro": "Não encontrado"}, 404
+
+    # Busca se o usuário já votou neste comentário
+    existente = CommentInteraction.query.filter_by(user_id=user_id, comment_id=comment_id).first()
+
+    if existente:
+        if existente.type == tipo: db.session.delete(existente)
+        else: existente.type = tipo
+    else:
+        nova = CommentInteraction(user_id=user_id, comment_id=comment_id, type=tipo)
+        db.session.add(nova)
+
+    db.session.commit()
+    # Atualiza os contadores na tabela Comment
+    comment.likes = CommentInteraction.query.filter_by(comment_id=comment_id, type='like').count()
+    comment.dislikes = CommentInteraction.query.filter_by(comment_id=comment_id, type='dislike').count()
+    db.session.commit()
+
+    return {"likes": comment.likes, "dislikes": comment.dislikes}
 
 
 
