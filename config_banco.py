@@ -1,6 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 
+
 # Instância do SQLAlchemy que será vinculada ao app depois
 db = SQLAlchemy()
 
@@ -51,9 +52,20 @@ class Comment(db.Model):
     date_posted = db.Column(db.DateTime, default=datetime.utcnow)
     likes = db.Column(db.Integer, default=0)
     dislikes = db.Column(db.Integer, default=0)
-    parent_id = db.Column(db.Integer, db.ForeignKey('comment.id')) # Para respostas
+    parent_id = db.Column(db.Integer, db.ForeignKey('comment.id'))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
     post = db.relationship('Post', backref=db.backref('comments', lazy=True))
     author = db.relationship('User', backref=db.backref('comments', lazy=True))
     replies = db.relationship('Comment', backref=db.backref('parent', remote_side=[id]), lazy=True)
+
+class Notification(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    recipient_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    sender_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=True)
+    type = db.Column(db.String(20), nullable=False) # 'like', 'comment', 'mention'
+    is_read = db.Column(db.Boolean, default=False)
+    date_created = db.Column(db.DateTime, default=datetime.utcnow)
+    recipient = db.relationship('User', foreign_keys=[recipient_id], backref='notifications')
+    sender = db.relationship('User', foreign_keys=[sender_id])

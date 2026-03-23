@@ -89,13 +89,15 @@
 .code-block-fixed {
     height: 250px !important;
     overflow-y: auto !important;
-    background: #010409;
-    padding: 15px;
     border-radius: 8px;
     border: 1px solid var(--border);
-    font-family: 'Consolas', 'Monaco', monospace;
-    white-space: pre;
-    font-size: 0.9rem;
+    background: #1d1f21 !important; /* Cor que combina com o tema Tomorrow Night */
+    margin: 10px 0;
+}
+
+.code-block-fixed pre {
+    margin: 0 !important;
+    background: transparent !important;
 }
 
 /* Container de mídias (Imagens e Vídeos) */
