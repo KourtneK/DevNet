@@ -8,6 +8,8 @@ from sqlalchemy import or_
 import mimetypes
 from werkzeug.utils import secure_filename
 from datetime import *
+import re
+from markupsafe import Markup
 
 # =========================================================
 # 1. CONFIGURAÇÕES INICIAIS E AMBIENTE
@@ -422,13 +424,21 @@ def delete_user(id):
 # 6. UTILITÁRIOS E INICIALIZAÇÃO
 # =========================================================
 
+
+
 @app.route('/favicon.ico')
 def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static'),
                                'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
+@app.template_filter('mentions')
+def highlight_mentions(text):
+    mention_pattern = r'@(\w+)'
+    replacement = r'<span style="color: var(--accent-perfil); font-weight: bold;">\1</span>'
+    processed_text = re.sub(mention_pattern, replacement, text)
+    return Markup(processed_text)
+
 if __name__ == '__main__':
     print("✅   SERVIDOR DE-NET RODANDO NA PORTA 3000")
     print("⚠️    APERTE CTREL+C PARA PARAR O MOTOR")
-    # Debug=True para capturar erros durante o desenvolvimento
     app.run(host='localhost', port=3000, debug=True)

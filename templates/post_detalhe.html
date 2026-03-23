@@ -97,7 +97,7 @@
                         <div class="post-header" style="font-size: 0.8rem;">
                             @{{ comment.author.username }} • {{ comment.date_posted.strftime('%d/%m %H:%M') }}
                         </div>
-                        <p class="post-text">{{ comment.content }}</p>
+                        <p class="post-text">{{ comment.content | mentions }}</p>
                         
                         {% if comment.code_content %}
                             <div class="code-block-fixed" style="max-height: 150px;"><pre><code>{{ comment.code_content }}</code></pre></div>
@@ -133,7 +133,9 @@
                                             {{ comment.content | truncate(50) }} </div>
 
                                         <span style="color: var(--accent-color); font-size: 0.8rem;">@{{ reply.author.username }}:</span>
-                                        <p class="post-text" style="font-size: 0.9rem; margin: 0;">{{ reply.content }}</p>
+                                        <p class="post-text" style="font-size: 0.9rem; margin: 0;">
+                                            {{ reply.content | mentions }}
+                                        </p>
                                     </div>
                                 {% endfor %}
                             </div>
