@@ -174,3 +174,75 @@ function abrirResposta(id) { // Não precisamos mais passar o username aqui
         textarea.focus();    // Deixa o cursor pronto para o dev digitar
     }
 }
+
+async function toggleNotifDropdown() {
+    const dropdown = document.getElementById('notif-dropdown');
+    const list = document.getElementById('notif-list');
+    const badge = document.getElementById('notif-badge');
+    
+    if (dropdown.style.display === 'none' || dropdown.style.display === '') {
+        // 1. Busca as notificações
+        const response = await fetch('/api/notifications');
+        const data = await response.json();
+        
+        list.innerHTML = '';
+        
+        if (data.notifications.length === 0) {
+            list.innerHTML = '<p style="padding: 15px; color: var(--accent-gray); text-align: center;">Tudo limpo por aqui! 🚀</p>';
+        } else {
+            data.notifications.forEach(n => {
+                const item = document.createElement('div');
+                item.style.padding = '12px';
+                item.style.borderBottom = '1px solid rgba(255,255,255,0.05)';
+                item.style.cursor = 'pointer';
+                item.style.fontSize = '0.85rem';
+                if (!n.is_read) item.style.backgroundColor = 'rgba(35, 134, 54, 0.1)';
+                
+                const acao = n.type === 'comment' ? 'comentou no seu post' : 'curtiu seu post';
+                item.innerHTML = `<strong style="color: var(--accent-green);">@${n.sender}</strong> ${acao}`;
+                
+                item.onclick = () => window.location.href = `/ver_post/${n.post_id}`;
+                list.appendChild(item);
+            });
+        }
+        
+        dropdown.style.display = 'block';
+        
+        // 2. Limpa o contador no servidor e na tela
+        if (badge && badge.style.display !== 'none') {
+            fetch('/api/notifications/read', { method: 'POST' });
+            badge.style.display = 'none';
+        }
+    } else {
+        dropdown.style.display = 'none';
+    }
+}
+
+// Fecha o dropdown se clicar fora dele
+window.onclick = function(event) {
+    if (!event.target.matches('#notif-btn') && !event.target.closest('#notif-dropdown')) {
+        const dropdown = document.getElementById('notif-dropdown');
+        if (dropdown) dropdown.style.display = 'none';
+    }
+}
+
+async function limparNotificacoes() {
+    if (!confirm("Deseja excluir todas as notificações definitivamente?")) return;
+
+    try {
+        const response = await fetch('/api/notifications/clear', { method: 'POST' });
+        if (response.ok) {
+            // Limpa a lista visualmente sem precisar dar F5
+            const list = document.getElementById('notif-list');
+            list.innerHTML = '<p style="padding: 15px; color: var(--accent-gray); text-align: center;">Tudo limpo por aqui! 🚀</p>';
+            
+            // Esconde o badge se ele ainda estiver lá
+            const badge = document.getElementById('notif-badge');
+            if (badge) badge.style.display = 'none';
+            
+            console.log("DevNet Engine: Notificações deletadas com sucesso.");
+        }
+    } catch (error) {
+        console.error("Erro ao limpar notificações:", error);
+    }
+}

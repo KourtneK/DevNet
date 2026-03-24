@@ -12,6 +12,27 @@
     <title>DevNet - {% block title %}{% endblock %}</title>
 </head>
 <body>
+
+    <div class="notif-wrapper" style="position: relative; display: inline-block; margin-right: 15px;">
+        <button class="btn button-feed" onclick="toggleNotifDropdown()" id="notif-btn" style="cursor: pointer;">
+            🔔 
+            <span id="notif-badge" style="background: #f85149; padding: 2px 6px; border-radius: 50%; font-size: 0.7rem; display: {{ 'inline-block' if notif_count > 0 else 'none' }};">
+                {{ notif_count }}
+            </span>
+        </button>
+
+        <div id="notif-dropdown" style="display: none; position: absolute; right: 0; top: 45px; width: 300px; background: #0d1117; border: 1px solid var(--border); border-radius: 8px; z-index: 9999; box-shadow: 0 8px 24px rgba(0,0,0,0.5);">
+            <div style="padding: 12px; border-bottom: 1px solid var(--border); font-weight: bold; color: var(--accent-green); display: flex; justify-content: space-between; align-items: center;">
+                <span>Notificações</span>
+                <span onclick="limparNotificacoes()" style="font-size: 0.7rem; color: #f85149; cursor: pointer; font-weight: normal;">
+                    🗑️ Limpar Tudo
+                </span>
+            </div>
+            <div id="notif-list" style="max-height: 350px; overflow-y: auto;">
+                </div>
+        </div>
+    </div>
+
     <nav>
         {% if request.path != '/' %}
             <a href="/" class="btn button-home">Home</a>

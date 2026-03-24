@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session, send_from_directory
 from flask_cors import CORS
-from config_banco import db, User, Post, Interaction, Comment, CommentInteraction
+from config_banco import db, User, Post, Interaction, Comment, CommentInteraction, Notification
 from dotenv import load_dotenv
 import os
 import requests
@@ -10,6 +10,7 @@ from werkzeug.utils import secure_filename
 from datetime import *
 import re
 from markupsafe import Markup
+from social import social_bp
 
 # =========================================================
 # 1. CONFIGURAÇÕES INICIAIS E AMBIENTE
@@ -30,6 +31,7 @@ app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=3650)
 
 # Inicialização do Banco de Dados
 db.init_app(app)
+app.register_blueprint(social_bp)
 
 with app.app_context():
     db.create_all() # Garante que as tabelas User e Post sejam criadas
@@ -186,43 +188,6 @@ def post_view():
         return redirect(url_for('login'))
     return render_template('post.html')
 
-@app.route('/interagir/<string:tipo>/<int:post_id>', methods=['POST'])
-def interagir(tipo, post_id):
-    user_id = session.get('user_id')
-    if not user_id:
-        return {"erro": "Não autorizado"}, 401
-
-    post = db.session.get(Post, post_id)
-    if not post:
-        return {"erro": "Post não encontrado"}, 404
-
-    # Busca se já existe uma interação desse usuário com esse post
-    existente = Interaction.query.filter_by(user_id=user_id, post_id=post_id).first()
-
-    if existente:
-        if existente.type == tipo:
-            # O usuário clicou no mesmo botão: Removemos a interação (Toggle Off)
-            db.session.delete(existente)
-        else:
-            # O usuário mudou de ideia: Troca de Like para Dislike ou vice-versa
-            existente.type = tipo
-    else:
-        # Nova interação: Cria o vínculo no banco
-        nova = Interaction(user_id=user_id, post_id=post_id, type=tipo)
-        db.session.add(nova)
-
-    db.session.commit()
-
-    # Recalcula os totais baseados na tabela de vínculos para garantir precisão real
-    post.likes = Interaction.query.filter_by(post_id=post_id, type='like').count()
-    post.dislikes = Interaction.query.filter_by(post_id=post_id, type='dislike').count()
-    db.session.commit()
-
-    return {
-        "likes": post.likes,
-        "dislikes": post.dislikes
-    }
-
 # deletar post
 @app.route('/deletar_post/<int:post_id>', methods=['POST'])
 def deletar_post(post_id):
@@ -262,74 +227,9 @@ def ver_post(post_id):
     # Carrega o molde exclusivo para um único post
     return render_template('post_detalhe.html', post=post)
 
-@app.route('/comentar/<int:post_id>', methods=['POST'])
-def comentar(post_id):
-    if 'user_id' not in session: return redirect(url_for('login'))
-    
-    conteudo = request.form.get('comment_text')
-    codigo = request.form.get('comment_code')
-    parent_id = request.form.get('parent_id') # NOVO: Captura se é uma resposta
-    
-    if conteudo:
-        novo = Comment(content=conteudo, code_content=codigo, user_id=session['user_id'], 
-                       post_id=post_id, parent_id=parent_id)
-        db.session.add(novo)
-        db.session.commit()
-    return redirect(url_for('ver_post', post_id=post_id))
-
-@app.route('/interagir_comentario/<string:tipo>/<int:comment_id>', methods=['POST'])
-def interagir_comentario(tipo, comment_id):
-    user_id = session.get('user_id')
-    if not user_id: return {"erro": "Não autorizado"}, 401
-
-    comment = db.session.get(Comment, comment_id)
-    if not comment: return {"erro": "Não encontrado"}, 404
-
-    # Busca se o usuário já votou neste comentário
-    existente = CommentInteraction.query.filter_by(user_id=user_id, comment_id=comment_id).first()
-
-    if existente:
-        if existente.type == tipo: db.session.delete(existente)
-        else: existente.type = tipo
-    else:
-        nova = CommentInteraction(user_id=user_id, comment_id=comment_id, type=tipo)
-        db.session.add(nova)
-
-    db.session.commit()
-    # Atualiza os contadores na tabela Comment
-    comment.likes = CommentInteraction.query.filter_by(comment_id=comment_id, type='like').count()
-    comment.dislikes = CommentInteraction.query.filter_by(comment_id=comment_id, type='dislike').count()
-    db.session.commit()
-
-    return {"likes": comment.likes, "dislikes": comment.dislikes}
-
-
-
-
-
 # =========================================================
 # 4. PERFIL E CONFIGURAÇÕES
 # =========================================================
-
-@app.route('/perfil')
-def perfil():
-    user_id = session.get('user_id')
-    token = session.get('access_token') 
-    
-    if not user_id or not token:
-        return redirect(url_for('login'))
-
-    user = db.session.get(User, user_id)
-    # Verifica permissão administrativa para renderizar o botão especial
-    is_admin = (user.email in ADMINS_AUTORIZADOS)
-
-    # Integração em tempo real com Repositórios do GitHub
-    repos_resp = requests.get(
-        'https://api.github.com/user/repos?type=owner&sort=updated',
-        headers={'Authorization': f'token {token}'}
-    ).json()
-
-    return render_template('perfil.html', user=user, is_admin=is_admin, repos=repos_resp)
 
 @app.route('/config')
 def config_page():
@@ -339,20 +239,6 @@ def config_page():
     
     user = db.session.get(User, user_id)
     return render_template('config.html', user=user)
-
-@app.route('/update_bio', methods=['POST'])
-def update_bio():
-    user_id = session.get('user_id')
-    if not user_id:
-        return redirect(url_for('login'))
-    
-    nova_bio = request.form.get('bio')
-    user = db.session.get(User, user_id)
-    if user:
-        user.bio = nova_bio
-        db.session.commit()
-    
-    return redirect(url_for('perfil'))
 
 # =========================================================
 # 5. PAINEL ADMINISTRATIVO (CENTRAL DE COMANDO)
@@ -420,11 +306,21 @@ def delete_user(id):
     
     return redirect(url_for('admin_panel'))
 
+def criar_notificacao(destinatario_id, remetente_id, post_id, tipo):
+    if destinatario_id == remetente_id:
+        return
+    nova_notif = Notification(
+        recipient_id=destinatario_id,
+        sender_id=remetente_id,
+        post_id=post_id,
+        type=tipo
+    )
+    db.session.add(nova_notif)
+    db.session.commit()
+
 # =========================================================
 # 6. UTILITÁRIOS E INICIALIZAÇÃO
 # =========================================================
-
-
 
 @app.route('/favicon.ico')
 def favicon():
@@ -437,6 +333,16 @@ def highlight_mentions(text):
     replacement = r'<span style="color: var(--accent-perfil); font-weight: bold;">\1</span>'
     processed_text = re.sub(mention_pattern, replacement, text)
     return Markup(processed_text)
+
+@app.context_processor
+def inject_notifications():
+    if 'user_id' in session:
+        count = Notification.query.filter_by(
+            recipient_id=session['user_id'], 
+            is_read=False
+        ).count()
+        return dict(notif_count=count)
+    return dict(notif_count=0)
 
 if __name__ == '__main__':
     print("✅   SERVIDOR DE-NET RODANDO NA PORTA 3000")
