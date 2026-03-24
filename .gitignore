@@ -29,7 +29,11 @@ venv/
 ./env/
 ./venv/
 
+/uploads/
 
+/uploads
+
+uploads/
 
 # Database file
 *.db

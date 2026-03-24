@@ -10,7 +10,7 @@
         <div class="comments-section" style="margin-top: 30px;">
             <h3 style="color: var(--accent-color);">💬 Comentários</h3>
 
-            <form id="area-comentario" action="{{ url_for('comentar', post_id=post.id) }}" method="POST" 
+            <form id="area-comentario" action="{{ url_for('social.comentar', post_id=post.id) }}" method="POST" 
                 class="post-form-container" style="display: none;">
                 <textarea name="comment_text" id="campo-texto-comentario" placeholder="Escreva um comentário..." class="fixed-input" required></textarea>
                 <textarea name="comment_code" placeholder="Cole um trecho de código aqui (opcional)..." class="fixed-code-input"></textarea>
@@ -116,7 +116,7 @@
                         </div>
 
                         <div id="reply-{{ comment.id }}" style="display: none; margin-top: 10px; padding-left: 20px;">
-                            <form action="{{ url_for('comentar', post_id=post.id) }}" method="POST">
+                            <form action="{{ url_for('social.comentar', post_id=post.id) }}" method="POST">
                                 <input type="hidden" name="parent_id" value="{{ comment.id }}">
                                 <textarea name="comment_text" class="fixed-input" style="height: 60px;" placeholder="Responda..." required></textarea>
                                 <button type="submit" class="btn-post" style="padding: 5px 15px;">Enviar</button>
