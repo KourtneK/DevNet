@@ -1,5 +1,7 @@
 # Estrutura de Pastas e arquivos do projeto
 
+# Execute o arquivo setup.bat para criar o ambiente virtual python e instalar as dependencias
+
 ```
 c:\Users\Aluno\Desktop\DevNet\
 ├───.gitignore
