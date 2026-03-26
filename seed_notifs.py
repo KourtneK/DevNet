@@ -7,7 +7,7 @@ def semear_notificacoes():
         meu_usuario = User.query.filter_by(username='KourtneK').first()
         
         if not meu_usuario:
-            print("❌ Erro: Usuário 'KourtneK' não encontrado no banco.")
+            print(f"❌ Erro: Usuário 'KourtneK' não encontrado no banco.")
             return
 
         # 2. Busca um post qualquer para vincular à notificação

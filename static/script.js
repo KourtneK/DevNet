@@ -1,6 +1,6 @@
 /**
  * DevNet - script.js (Central Engine)
- * Organizado por funções para controle total do sistema Vanilla.
+ * Organizado por funções
  */
 
 // --- FUNÇÕES DO FEED (POSTAGEM UNIVERSAL) ---
@@ -23,15 +23,14 @@ function mostrarPreview(input, tipo) {
         if (tipo === 'image') {
             reader.onload = e => { 
                 img.src = e.target.result; 
-                img.style.display = 'block'; // Mostra sem ocultar os outros
+                img.style.display = 'block';
             };
             reader.readAsDataURL(input.files[0]);
         } else if (tipo === 'video') {
             const url = URL.createObjectURL(input.files[0]);
             vid.src = url; 
-            vid.style.display = 'block'; // Coexiste com a imagem e anexo
+            vid.style.display = 'block';
         } else {
-            // Suporta qualquer extensão técnica (.ejs, .pdf, etc.)
             text.innerHTML = "📎 Arquivo: <strong>" + input.files[0].name + "</strong>";
             text.style.display = 'block'; 
         }
@@ -135,14 +134,13 @@ function toggleComentario() {
     }
 }
 
-// Escutador de carregamento: Verifica se o usuário "quis" comentar vindo do feed
+// Escutador de carregamento: Verifica se o usuário quis comentar vindo do feed
 document.addEventListener('DOMContentLoaded', () => {
     // Se a URL terminar em #comentar, abre o formulário direto
     if (window.location.hash === '#comentar') {
         toggleComentario();
     }
     
-    // Mantém suas outras inicializações
     filtrarRepositorios();
 });
 
@@ -162,7 +160,7 @@ function abrirResposta(id) {
     div.style.display = (div.style.display === 'none') ? 'block' : 'none';
 }
 
-function abrirResposta(id) { // Não precisamos mais passar o username aqui
+function abrirResposta(id) {
     const div = document.getElementById(`reply-${id}`);
     const textarea = div.querySelector('textarea');
     
@@ -170,8 +168,8 @@ function abrirResposta(id) { // Não precisamos mais passar o username aqui
     div.style.display = (div.style.display === 'none') ? 'block' : 'none';
     
     if (div.style.display === 'block') {
-        textarea.value = ""; // Garante que o campo comece limpo
-        textarea.focus();    // Deixa o cursor pronto para o dev digitar
+        textarea.value = ""; // O campo ja começa limpo
+        textarea.focus();    // Deixa o cursor pronto para digitar
     }
 }
 
